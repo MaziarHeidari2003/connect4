@@ -18,8 +18,6 @@ class _RedisStatus(IntEnum):
 
 class RedisConnector:
     def __init__(self, redis_host_uri: str) -> None:
-        print(settings.REDIS_PASSWORD)
-        print(settings.REDIS_USERNAME)
         self._client: redis.Redis = None
         self._redis_host_uri = redis_host_uri
 

@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-import uuid
+import uuid as _uuid
 import enum
 
 
@@ -10,14 +10,16 @@ class GameStatus(str, enum.Enum):
 
 
 class GameCreateSchema(BaseModel):
-    uuid: str | None = None
+    uuid: _uuid.UUID | None = None
     board: list
     status: GameStatus | None = None
     player_1: int | None = None
+    current_turn: int
 
 
 class GameUpdateSchema(BaseModel):
     board: list
     status: GameStatus | None = None
-    player1: int
+    player_1: int
+    player_2: int
     winner: int

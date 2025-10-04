@@ -5,8 +5,10 @@ from app.schemas import GameCreateSchema, GameUpdateSchema
 from sqlalchemy.future import select
 
 
-class CRUDPlayer(CRUDBase[Game, GameCreateSchema, GameUpdateSchema]):
-    pass
+class CRUDGame(CRUDBase[Game, GameCreateSchema, GameUpdateSchema]):
+    async def get_by_uuid(self, db: AsyncSession, _uuid: str):
+        query = select(self.model).where(self.model.uuid == _uuid)
+        return await self._first(db.scalars(query))
 
 
-game = CRUDPlayer(Game)
+game = CRUDGame(Game)

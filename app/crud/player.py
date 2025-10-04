@@ -19,12 +19,13 @@ class CRUDPlayer(CRUDBase[Player, PlayerCreateSchema, PlayerUpdateSchema]):
     async def get_with_cache(
         self, *, db: AsyncSession | None = None, id: int
     ) -> Player:
-        query = select(Player).filter(Player.id == id)
+        query = select(Player).where(Player.id == id)
+        print(7787)
         if not db:
             async with async_session() as db:
-                return self._first(db.scalars(query))
+                return await self._first(db.scalars(query))
         else:
-            return self._first(db.scalars(query))
+            return await self._first(db.scalars(query))
 
 
 player = CRUDPlayer(Player)

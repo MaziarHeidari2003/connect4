@@ -3,6 +3,8 @@ from typing import Generic, TypeVar, Type, Any, Union, Awaitable
 from app.db.base_class import Base
 from sqlalchemy.future import select
 from pydantic import BaseModel
+from typing import Dict
+from datetime import datetime
 
 ModelType = TypeVar("ModelType", bound=Base)
 CreateSchemaType = TypeVar("CreateSchemaType", bound=BaseModel)
@@ -20,7 +22,7 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
             await db.commit()
             await db.refresh(db_obj)
         else:
-            await db.refresh()
+            await db.flush()
         return db_obj
 
     async def get(self, db: AsyncSession, id: Any):
@@ -54,3 +56,25 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
         db_obj = self.model(**obj_in)  # type: ignore
         db.add(db_obj)
         return await self._commit_refresh(db=db, db_obj=db_obj, commit=commit)
+
+    def update(
+        self,
+        db: AsyncSession,
+        *,
+        db_obj: ModelType,
+        obj_in: Union[UpdateSchemaType, Dict[str, Any], None] = None,
+        commit: bool = True,
+    ) -> Union[ModelType, Awaitable[ModelType]]:
+        if obj_in is not None:
+            obj_data = db_obj.__dict__
+            if isinstance(obj_in, dict):
+                update_data = obj_in
+            else:
+                update_data = obj_in.dict(exclude_unset=True)
+            for field in obj_data:
+                if field in update_data:
+                    setattr(db_obj, field, update_data[field])
+        if hasattr(self.model, "modified"):
+            setattr(db_obj, "modified", datetime.now())
+        db.add(db_obj)
+        return self._commit_refresh(db=db, db_obj=db_obj, commit=commit)
