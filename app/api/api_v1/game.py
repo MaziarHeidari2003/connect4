@@ -40,6 +40,17 @@ async def join_game(
     db: AsyncSession = Depends(deps.get_db_async),
 ):
     game = await crud.game.get_by_uuid(db=db, _uuid=game_uuid)
+    if not game:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail="The game doesn't exist"
+        )
+
+    if game.status in (schemas.GameStatus.FINISHED, schemas.GameStatus.IN_PROGRESS):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="You can't join this game, two players have taken the game",
+        )
+
     game.player_2 = current_player.id
     game.status = schemas.GameStatus.IN_PROGRESS.value
     game = await crud.game.update(db=db, db_obj=game)
