@@ -16,7 +16,8 @@ services:
     command: >
       poetry run uvicorn app.main:app
       --host 0.0.0.0 --port 8000 --reload
-
+    env_file:
+      - .env 
   db:
     image: postgres:16
     environment:
@@ -28,10 +29,15 @@ services:
     ports:
       - "5432:5432"
 
+    env_file:
+      - .env 
+
   redis:
     image: redis:7
     ports:
       - "6379:6379"
+    env_file:
+      - .env     
 
 volumes:
   pgdata:
