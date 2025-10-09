@@ -4,6 +4,7 @@ from app.api import deps
 from app import schemas, models, crud
 import uuid
 from app.utils.helpers import winner_move
+from sqlalchemy.orm.attributes import flag_modified
 
 router = APIRouter()
 
@@ -57,6 +58,10 @@ async def make_move(
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST, detail="It is not your turn"
         )
+    if game.status == schemas.GameStatus.FINISHED:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail="The game is over"
+        )
 
     player_move = 1 if current_player.id == game.player_1 else 2
     board = game.board
@@ -67,11 +72,13 @@ async def make_move(
     print(board)
     last_0_index = len(board[chosen_column]) - 1 - board[chosen_column][::-1].index(0)
     board[chosen_column][last_0_index] = player_move
-    print(board)
     game.board = board
+    print(game.board)
     game.current_turn = (
         game.player_1 if current_player.id == game.player_2 else game.player_2
     )
+    flag_modified(game, "board")
+
     if winner_move(column_count=6, row_count=5, player_move=player_move, board=board):
         game.winner = current_player.id
         game.status = schemas.GameStatus.FINISHED
