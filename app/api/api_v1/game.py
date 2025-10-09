@@ -56,6 +56,10 @@ async def make_move(
     current_player: models.Player = Depends(deps.get_current_user),
 ):
     game = await crud.game.get_by_uuid(db=db, _uuid=game_uuid)
+    if not game:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail="The game doesn't exist"
+        )
     if current_player.id != game.current_turn:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST, detail="It is not your turn"
@@ -104,6 +108,7 @@ async def get_games(
 
     results = await crud.game.get_pending_games(db=db)
     pydantic_game_schema = []
+
     for result in results:
         pydantic_game_schema.append(schemas.PendingGameResponse.from_orm(result))
 

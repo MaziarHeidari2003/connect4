@@ -1,9 +1,9 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, EmailStr
 from app import schemas
 
 
 class PlayerCreateSchema(BaseModel):
-    email: str
+    email: EmailStr
     nick_name: str
 
 
@@ -11,15 +11,15 @@ class PlayerUpdateSchema(BaseModel): ...
 
 
 class LoginOutput(schemas.Token):
-    email: str
+    email: EmailStr
     nick_name: str
     id: int
 
 
 class PlayerLogin(BaseModel):
-    email: str
+    email: EmailStr
 
 
 class PlayerRegister(BaseModel):
-    email: str
+    email: EmailStr
     nick_name: str

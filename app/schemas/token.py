@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, EmailStr
 
 
 class Token(BaseModel):
@@ -8,5 +8,5 @@ class Token(BaseModel):
 
 class TokenPayload(BaseModel):
     user_id: int
-    email: str | None = None
+    email: EmailStr | None = None
     exp: float | None
