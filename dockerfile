@@ -17,4 +17,9 @@ RUN poetry install --no-root --no-interaction --no-ansi
 
 COPY . .
 
+COPY entrypoint.sh /app/entrypoint.sh
+RUN chmod +x /app/entrypoint.sh
+
+ENTRYPOINT ["/app/entrypoint.sh"]
+
 CMD ["poetry", "run", "python", "-m", "app.main"]

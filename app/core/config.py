@@ -86,6 +86,7 @@ class Settings(BaseSettings):
     def assemble_async_db_connection(
         cls, v: Optional[str], values: ValidationInfo
     ) -> Any:
+        print(55555)
         if isinstance(v, str):
             return v
         return AsyncPostgresDsn.build(
