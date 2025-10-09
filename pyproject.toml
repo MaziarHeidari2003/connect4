@@ -1,5 +1,5 @@
 [project]
-name = "connect-4"
+name = "connect_4"
 version = "0.1.0"
 description = ""
 authors = [
