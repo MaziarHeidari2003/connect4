@@ -5,6 +5,8 @@ from app import schemas, models, crud
 import uuid
 from app.utils.helpers import winner_move
 from sqlalchemy.orm.attributes import flag_modified
+from app.utils.time_checker_job import schedule_checker, schedule_remover
+from app.core.security import settings
 
 router = APIRouter()
 
@@ -55,6 +57,10 @@ async def join_game(
     game.player_2 = current_player.id
     game.status = schemas.GameStatus.IN_PROGRESS.value
     game = await crud.game.update(db=db, db_obj=game)
+
+    if settings.USE_APSCHEDULER:
+        schedule_checker(game_uuid=game_uuid, move_num=game.moves_count)
+
     return True
 
 
@@ -85,6 +91,7 @@ async def make_move(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="The game is not started yet",
         )
+
     if chosen_column > 6 or chosen_column < 0:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -104,14 +111,17 @@ async def make_move(
         game.player_1 if current_player.id == game.player_2 else game.player_2
     )
     flag_modified(game, "board")
+    game.moves_count += 1
 
     if winner_move(column_count=6, row_count=5, player_move=player_move, board=board):
         game.winner = current_player.id
         game.status = schemas.GameStatus.FINISHED
-        await crud.game.update(db=db, db_obj=game)
-        return True
 
-    await crud.game.update(db=db, db_obj=game)
+    game = await crud.game.update(db=db, db_obj=game)
+    if settings.USE_APSCHEDULER:
+        schedule_checker(game_uuid=game_uuid, move_num=(game.moves_count))
+        schedule_remover(game_uuid=game_uuid, move_num=(game.moves_count - 1))
+
     return True
 
 

@@ -11,6 +11,7 @@ class Game(Base):
     uuid: Mapped[str] = mapped_column(UUID(as_uuid=True), unique=True)
     status: Mapped[str] = mapped_column(String, nullable=True)
     board: Mapped[list] = mapped_column(MutableList.as_mutable(JSONB), default=list)
+    moves_count: Mapped[int] = mapped_column(INTEGER, nullable=True, default=0)
     player_1: Mapped[int] = mapped_column(
         ForeignKey(Player.id, ondelete="SET NULL"), index=True, nullable=True
     )

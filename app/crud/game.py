@@ -12,6 +12,7 @@ class CRUDGame(CRUDBase[Game, GameCreateSchema, GameUpdateSchema]):
         p1 = aliased(models.Player)
         p2 = aliased(models.Player)
         turn = aliased(models.Player)
+        winner = aliased(models.Player)
         # I can handle having the players' names in a smoother way, but I like these joins and there are some lessons for me here
         query = (
             select(
@@ -22,10 +23,12 @@ class CRUDGame(CRUDBase[Game, GameCreateSchema, GameUpdateSchema]):
                 p1.nick_name.label("player_1_nick"),
                 p2.nick_name.label("player_2_nick"),
                 turn.nick_name.label("current_turn_nick"),
+                winner.nick_name.label("winner"),
             )
             .join(p1, self.model.player_1 == p1.id, isouter=True)
             .join(p2, self.model.player_2 == p2.id, isouter=True)
             .join(turn, self.model.current_turn == turn.id, isouter=True)
+            .join(winner, self.model.winner == winner.id, isouter=True)
             .where(self.model.uuid == _uuid)
         )
         result = await db.execute(query)

@@ -34,6 +34,7 @@ class GameResponse(BaseModel):
     player_2_nick: str | None = None
     board: list
     current_turn_nick: str | None = None
+    winner: str | None = None
 
     class Config:
         from_attributes = True
