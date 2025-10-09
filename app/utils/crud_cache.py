@@ -31,7 +31,6 @@ class CrudCache:
 
         data = await redis.get(redis_key)
         if not data:
-            print(3)
             return None
 
         return CrudCache.loads(data)
@@ -87,7 +86,6 @@ class CrudCache:
                     exclude_kwargs=exclude_kwargs,
                     kwargs=kwargs,
                 )
-                print(await CrudCache.get_by_key(redis_key=redis_key))
                 if obj := await CrudCache.get_by_key(redis_key=redis_key):
                     logger.debug(f"async, obj found in cache: {redis_key}")
                     return obj

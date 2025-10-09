@@ -6,4 +6,4 @@ from .player import (
     PlayerLogin,
     PlayerRegister,
 )
-from .game import GameCreateSchema, GameUpdateSchema, GameStatus
+from .game import GameCreateSchema, GameUpdateSchema, GameStatus, PendingGameResponse

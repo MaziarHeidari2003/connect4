@@ -20,7 +20,6 @@ class CRUDPlayer(CRUDBase[Player, PlayerCreateSchema, PlayerUpdateSchema]):
         self, *, db: AsyncSession | None = None, id: int
     ) -> Player:
         query = select(Player).where(Player.id == id)
-        print(7787)
         if not db:
             async with async_session() as db:
                 return await self._first(db.scalars(query))

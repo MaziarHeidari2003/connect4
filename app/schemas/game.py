@@ -1,6 +1,7 @@
 from pydantic import BaseModel
 import uuid as _uuid
 import enum
+from datetime import datetime
 
 
 class GameStatus(str, enum.Enum):
@@ -23,3 +24,13 @@ class GameUpdateSchema(BaseModel):
     player_1: int
     player_2: int
     winner: int
+
+
+class PendingGameResponse(BaseModel):
+    uuid: _uuid.UUID
+    status: str
+    created: datetime
+    nick_name: str
+
+    class Config:
+        from_attributes = True

@@ -38,9 +38,7 @@ async def get_current_user(authorization: str = Depends(HTTPBearer())):
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Authentication Failed",
         )
-    print(token_data.user_id)
     user = await crud.player.get_with_cache(db=None, id=token_data.user_id)
-    print(44444444444)
 
     if not user:
         raise HTTPException(
