@@ -6,4 +6,10 @@ from .player import (
     PlayerLogin,
     PlayerRegister,
 )
-from .game import GameCreateSchema, GameUpdateSchema, GameStatus, PendingGameResponse
+from .game import (
+    GameCreateSchema,
+    GameUpdateSchema,
+    GameStatus,
+    GameResponse,
+    PendingGameResponse,
+)

@@ -13,7 +13,7 @@ router = APIRouter()
 async def create_game(
     current_player: models.Player = Depends(deps.get_current_user),
     db: AsyncSession = Depends(deps.get_db_async),
-):
+) -> uuid.UUID:
     game_create_data = schemas.GameCreateSchema(
         board=[
             [0, 0, 0, 0, 0, 0],
@@ -30,7 +30,8 @@ async def create_game(
         current_turn=current_player.id,
     )
 
-    return await crud.game.create(db=db, obj_in=game_create_data)
+    game = await crud.game.create(db=db, obj_in=game_create_data)
+    return game.uuid
 
 
 @router.patch("/join")
@@ -54,7 +55,7 @@ async def join_game(
     game.player_2 = current_player.id
     game.status = schemas.GameStatus.IN_PROGRESS.value
     game = await crud.game.update(db=db, db_obj=game)
-    return game
+    return True
 
 
 @router.patch("/make-move")
@@ -65,7 +66,7 @@ async def make_move(
     ),
     db: AsyncSession = Depends(deps.get_db_async),
     current_player: models.Player = Depends(deps.get_current_user),
-):
+) -> bool:
     game = await crud.game.get_by_uuid(db=db, _uuid=game_uuid)
     if not game:
         raise HTTPException(
@@ -107,20 +108,39 @@ async def make_move(
     if winner_move(column_count=6, row_count=5, player_move=player_move, board=board):
         game.winner = current_player.id
         game.status = schemas.GameStatus.FINISHED
-        return await crud.game.update(db=db, db_obj=game)
-    return await crud.game.update(db=db, db_obj=game)
+        await crud.game.update(db=db, db_obj=game)
+        return True
+
+    await crud.game.update(db=db, db_obj=game)
+    return True
 
 
 @router.get("/")
 async def get_games(
     db: AsyncSession = Depends(deps.get_db_async),
     current_player: models.Player = Depends(deps.get_current_user),
-):
+) -> list[schemas.PendingGameResponse]:
 
     results = await crud.game.get_pending_games(db=db)
     pydantic_game_schema = []
 
     for result in results:
         pydantic_game_schema.append(schemas.PendingGameResponse.from_orm(result))
+
+    return pydantic_game_schema
+
+
+@router.get("/current")
+async def get_current_game(
+    db: AsyncSession = Depends(deps.get_db_async),
+    current_player: models.Player = Depends(deps.get_current_user),
+    game_uuid: str = Query(...),
+) -> schemas.GameResponse:
+    game = await crud.game.get_game_and_players_by_uuid(db=db, _uuid=game_uuid)
+    if not game:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail="The game doesn't exist"
+        )
+    pydantic_game_schema = schemas.GameResponse.from_orm(game)
 
     return pydantic_game_schema

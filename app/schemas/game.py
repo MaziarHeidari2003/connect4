@@ -26,11 +26,25 @@ class GameUpdateSchema(BaseModel):
     winner: int
 
 
+class GameResponse(BaseModel):
+    uuid: _uuid.UUID
+    status: GameStatus
+    created: datetime
+    player_1_nick: str | None = None
+    player_2_nick: str | None = None
+    board: list
+    current_turn_nick: str | None = None
+
+    class Config:
+        from_attributes = True
+
+
 class PendingGameResponse(BaseModel):
     uuid: _uuid.UUID
-    status: str
+    status: GameStatus
     created: datetime
-    nick_name: str
+    player_1_nick: str | None = None
+    board: list
 
     class Config:
         from_attributes = True
