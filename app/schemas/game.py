@@ -16,6 +16,7 @@ class GameCreateSchema(BaseModel):
     status: GameStatus | None = None
     player_1: int | None = None
     current_turn: int
+    moves_count: int
 
 
 class GameUpdateSchema(BaseModel):

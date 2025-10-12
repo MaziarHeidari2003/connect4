@@ -45,7 +45,7 @@ def schedule_checker(game_uuid: uuid.UUID, move_num: int):
         time_limit_checker,
         kwargs={"game_uuid": game_uuid},
         trigger="date",
-        run_date=datetime.now() + timedelta(seconds=30),
+        run_date=datetime.now() + timedelta(seconds=60),
         id=f"{move_num}_{str(game_uuid)}",
     )
 
