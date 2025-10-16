@@ -31,7 +31,7 @@ class Settings(BaseSettings):
     REDIS_USERNAME: str | None
 
     PROJECT_NAME: str
-    API_V1_STR: str = "connect4/api/v1"
+    API_V1_STR: str = "/connect4/api/v1"
     FIRST_SUPERUSER: EmailStr
     FIRST_SUPERUSER_PASSWORD: str
     DEBUG: bool = False
