@@ -24,7 +24,7 @@ app.add_middleware(
 app.add_middleware(TrustedHostMiddleware, allowed_hosts=["*"])
 
 
-app.include_router(api_router, prefix=settings.API_V1_STR)
+app.include_router(api_router, prefix=f"/connect4{settings.API_V1_STR}")
 
 
 def custom_open_api():
