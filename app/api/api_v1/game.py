@@ -105,7 +105,7 @@ async def make_move(
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST, detail="This column is full"
         )
-    last_0_index = len(board[chosen_column]) - 1 - board[chosen_column][::-1].index(0)
+    last_0_index = board[chosen_column].index(0)
     board[chosen_column][last_0_index] = player_move
     game.board = board
     game.current_turn = (
