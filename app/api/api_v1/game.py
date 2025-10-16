@@ -143,7 +143,7 @@ async def make_move(
 active_connections = []
 
 
-@router.websocket("/ws/game/{game_uuid}")
+@router.websocket("/ws/{game_uuid}")
 async def websocket_endpoint(websocket: WebSocket, game_uuid: str):
     await websocket.accept()
     active_connections.append(websocket)
