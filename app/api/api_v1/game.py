@@ -43,6 +43,10 @@ async def create_game(
     )
 
     game = await crud.game.create(db=db, obj_in=game_create_data)
+    if settings.USE_APSCHEDULER:
+        print(settings.USE_APSCHEDULER)
+        schedule_checker(game_uuid=game.uuid)
+
     return game.uuid
 
 
@@ -67,9 +71,6 @@ async def join_game(
     game.player_2 = current_player.id
     game.status = schemas.GameStatus.IN_PROGRESS.value
     game = await crud.game.update(db=db, db_obj=game)
-
-    if settings.USE_APSCHEDULER:
-        schedule_checker(game_uuid=game_uuid, move_num=game.moves_count)
 
     return True
 
@@ -132,11 +133,6 @@ async def make_move(
 
     game = await crud.game.update(db=db, db_obj=game)
 
-    if settings.USE_APSCHEDULER:
-        print(settings.USE_APSCHEDULER)
-        schedule_checker(game_uuid=game_uuid, move_num=(game.moves_count))
-        schedule_remover(game_uuid=game_uuid, move_num=(game.moves_count - 1))
-    print(game.board)
     return True
 
 

@@ -31,22 +31,18 @@ async def time_limit_checker(game_uuid: uuid.UUID):
     print(f"Background task for game {game_uuid} started")
     async with async_session() as db:
         game = await crud.game.get_by_uuid(db=db, _uuid=game_uuid)
-        game.status = schemas.GameStatus.FINISHED
-        if game.player_1 == game.current_turn:
-            game.winner = game.player_2
-        else:
-            game.winner = game.player_1
-
+        if game.status == schemas.GameStatus.PENDING:
+            game.status = schemas.GameStatus.FINISHED
         await crud.game.update(db=db, db_obj=game)
 
 
-def schedule_checker(game_uuid: uuid.UUID, move_num: int):
+def schedule_checker(game_uuid: uuid.UUID):
     scheduler_app.scheduler.add_job(
         time_limit_checker,
         kwargs={"game_uuid": game_uuid},
         trigger="date",
-        run_date=datetime.now() + timedelta(seconds=60),
-        id=f"{move_num}_{str(game_uuid)}",
+        run_date=datetime.now() + timedelta(seconds=180),
+        id=f"{game_uuid}",
     )
 
 

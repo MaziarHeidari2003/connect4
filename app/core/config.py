@@ -18,7 +18,7 @@ class Settings(BaseSettings):
     CORS_ALLOWED_ORIGINS: List[str]
     CRUD_CACHE_REDIS_EXPIRATION_TIME: int = 60 * 20  # 20 min
     CRUD_CACHE_BASE_NAMESPACE: str = "connect4_crud:"
-    USE_APSCHEDULER: bool = False
+    USE_APSCHEDULER: bool = True
     POSTGRES_SERVER: str
     POSTGRES_USER: str
     POSTGRES_PASSWORD: str
