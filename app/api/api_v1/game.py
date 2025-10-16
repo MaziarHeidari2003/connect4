@@ -1,4 +1,13 @@
-from fastapi import APIRouter, Depends, HTTPException, status, Query, Body
+from fastapi import (
+    APIRouter,
+    Depends,
+    HTTPException,
+    WebSocketDisconnect,
+    status,
+    Query,
+    WebSocket,
+    WebSocketException,
+)
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.api import deps
 from app import schemas, models, crud
@@ -129,6 +138,27 @@ async def make_move(
         schedule_remover(game_uuid=game_uuid, move_num=(game.moves_count - 1))
     print(game.board)
     return True
+
+
+active_connections = []
+
+
+@router.websocket("/ws/game/{game_uuid}")
+async def websocket_endpoint(websocket: WebSocket, game_uuid: str):
+    await websocket.accept()
+    active_connections.append(websocket)
+    print(f"Client connected to game {game_uuid}")
+    try:
+        while True:
+            data = websocket.receive_text()
+            print(f"Message from client: {data}")
+
+            for conn in active_connections:
+                await conn.send_text(f"Game {game_uuid}: {data}")
+
+    except WebSocketDisconnect:
+        print("Client disconnected")
+        active_connections.remove(websocket)
 
 
 @router.get("/")
