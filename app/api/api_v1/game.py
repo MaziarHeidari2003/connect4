@@ -30,7 +30,7 @@ async def create_game(
         player_1=current_player.id,
         status=schemas.GameStatus.PENDING.value,
         current_turn=current_player.id,
-        moves_count=0
+        moves_count=0,
     )
 
     game = await crud.game.create(db=db, obj_in=game_create_data)
@@ -118,7 +118,7 @@ async def make_move(
         game.winner = current_player.id
         game.status = schemas.GameStatus.FINISHED
 
-    if game.moves_count == 42 and (not game.winner):     
+    if game.moves_count == 42 and (not game.winner):
         game.status = schemas.GameStatus.FINISHED
 
     game = await crud.game.update(db=db, db_obj=game)
