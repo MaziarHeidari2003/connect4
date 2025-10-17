@@ -50,7 +50,7 @@ class Settings(BaseSettings):
     # @see https://aio-pika.readthedocs.io/en/latest/rabbitmq-tutorial/2-work-queues.html#fair-dispatch
     CONSUMER_PREFETCH_COUNT: int = 1
 
-    SUB_PATH: str = ""
+    SUB_PATH: str = "/connect4"
 
     BACKEND_CORS_ORIGINS: List[str] = []
 
