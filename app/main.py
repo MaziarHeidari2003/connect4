@@ -8,7 +8,7 @@ from app.utils.time_checker_job import scheduler_app
 
 app = FastAPI(title=settings.PROJECT_NAME)
 if settings.DEBUG:
-    app.openapi_url = settings.API_V1_STR
+    app.openapi_url = f"/connect4{settings.API_V1_STR}"
     app.setup()
 if settings.SUB_PATH:
     app.mount(f"{settings.SUB_PATH}", app)
