@@ -6,12 +6,12 @@ from fastapi.openapi.utils import get_openapi
 from app.api.api_v1.api import api_router
 from app.utils.time_checker_job import scheduler_app
 
-app = FastAPI(title=settings.PROJECT_NAME)
+app = FastAPI(title=settings.PROJECT_NAME, root_path="/connect4")
 if settings.DEBUG:
     app.openapi_url = f"{settings.API_V1_STR}/openapi.json"
     app.setup()
-if settings.SUB_PATH:
-    app.mount(f"{settings.SUB_PATH}", app)
+# if settings.SUB_PATH:
+#     app.mount(f"{settings.SUB_PATH}", app)
 
 app.add_middleware(
     CORSMiddleware,
