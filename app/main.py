@@ -27,7 +27,7 @@ app.add_middleware(TrustedHostMiddleware, allowed_hosts=["*"])
 app.include_router(api_router, prefix=settings.API_V1_STR)
 
 
-def custom_open_api():
+def custom_openapi():
     if app.openapi_schema:
         return app.openapi_schema
     openapi_schema = get_openapi(
@@ -38,6 +38,9 @@ def custom_open_api():
     )
     app.openapi_schema = openapi_schema
     return app.openapi_schema
+
+
+app.openapi = custom_openapi
 
 
 @app.on_event("startup")
