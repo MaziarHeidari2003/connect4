@@ -6,10 +6,16 @@ from fastapi.openapi.utils import get_openapi
 from app.api.api_v1.api import api_router
 from app.utils.time_checker_job import scheduler_app
 
-app = FastAPI(title=settings.PROJECT_NAME)
 # if settings.DEBUG:
 #     app.openapi_url = f"/connect4{settings.API_V1_STR}"
 #     app.setup()
+
+app = FastAPI(
+    title=settings.PROJECT_NAME,
+    openapi_url="/connect4/openapi.json",
+    docs_url="/connect4/docs",
+    redoc_url="/connect4/redoc",
+)
 if settings.SUB_PATH:
     app.mount(f"{settings.SUB_PATH}", app)
 
