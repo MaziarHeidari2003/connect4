@@ -1,45 +1,26 @@
 def winner_move(column_count: int, row_count: int, player_move: int, board: list):
-    # vertically
+    # vertical check
     for c in range(column_count):
         for r in range(row_count - 3):
-            if (
-                board[c][r] == player_move
-                and board[c][r + 1] == player_move
-                and board[c][r + 2] == player_move
-                and board[c][r + 3] == player_move
-            ):
+            if all(board[c][r + i] == player_move for i in range(4)):
                 return True
 
-    # horizantally
+    # horizontal check
     for r in range(row_count):
         for c in range(column_count - 3):
-            if (
-                board[c][r] == player_move
-                and board[c + 1][r] == player_move
-                and board[c + 2][r] == player_move
-                and board[c + 3][r] == player_move
-            ):
+            if all(board[c + i][r] == player_move for i in range(4)):
                 return True
 
-    # diagonal
+    # diagonal bottom-left -> top-right
     for c in range(column_count - 3):
         for r in range(row_count - 3):
-            if (
-                board[c][r] == player_move
-                and board[c + 1][r + 1] == player_move
-                and board[c + 2][r + 2] == player_move
-                and board[c + 3][r + 3] == player_move
-            ):
+            if all(board[c + i][r + i] == player_move for i in range(4)):
                 return True
 
+    # diagonal top-left -> bottom-right (correct indexing for rectangular boards)
     for c in range(column_count - 3):
-        for r in range(row_count-1, 2, -1):
-            if (
-                board[c][r] == player_move
-                and board[c + 1][r - 1] == player_move
-                and board[c + 2][r - 2] == player_move
-                and board[c + 3][r - 3] == player_move
-            ):
+        for r in range(3, row_count):
+            if all(board[c + i][r - i] == player_move for i in range(4)):
                 return True
 
     return False
