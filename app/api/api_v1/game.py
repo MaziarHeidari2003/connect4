@@ -56,6 +56,13 @@ async def join_game(
     current_player: models.Player = Depends(deps.get_current_user),
     db: AsyncSession = Depends(deps.get_db_async),
 ):
+    if (
+        isinstance(game_uuid, str)
+        and game_uuid.startswith('"')
+        and game_uuid.endswith('"')
+    ):
+        game_uuid = game_uuid.strip('"')
+
     game = await crud.game.get_by_uuid(db=db, _uuid=game_uuid)
     if not game:
         raise HTTPException(
@@ -84,6 +91,13 @@ async def make_move(
     db: AsyncSession = Depends(deps.get_db_async),
     current_player: models.Player = Depends(deps.get_current_user),
 ) -> bool:
+    if (
+        isinstance(game_uuid, str)
+        and game_uuid.startswith('"')
+        and game_uuid.endswith('"')
+    ):
+        game_uuid = game_uuid.strip('"')
+
     game = await crud.game.get_by_uuid(db=db, _uuid=game_uuid)
     if not game:
         raise HTTPException(
@@ -187,6 +201,14 @@ async def get_current_game(
     current_player: models.Player = Depends(deps.get_current_user),
     game_uuid: str = Query(...),
 ) -> schemas.GameResponse:
+
+    if (
+        isinstance(game_uuid, str)
+        and game_uuid.startswith('"')
+        and game_uuid.endswith('"')
+    ):
+        game_uuid = game_uuid.strip('"')
+
     game = await crud.game.get_game_and_players_by_uuid(db=db, _uuid=game_uuid)
     if not game:
         raise HTTPException(
@@ -204,6 +226,13 @@ async def review_finished_game_steps(
     game_uuid: str = Query(...),
     game_step: int = Query(None),
 ):
+    if (
+        isinstance(game_uuid, str)
+        and game_uuid.startswith('"')
+        and game_uuid.endswith('"')
+    ):
+        game_uuid = game_uuid.strip('"')
+
     game = await crud.game.get_by_uuid(db=db, _uuid=game_uuid)
     if not game:
         raise HTTPException(status_code=404, detail="Game not found")
