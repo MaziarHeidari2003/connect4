@@ -46,6 +46,7 @@ class PendingGameResponse(BaseModel):
     status: GameStatus
     created: datetime
     player_1_nick: str | None = None
+    player_2_nick: str | None = None
     board: list
 
     class Config:
