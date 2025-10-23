@@ -132,6 +132,14 @@ async def make_move(
         game.status = schemas.GameStatus.FINISHED
 
     game = await crud.game.update(db=db, db_obj=game)
+    player_move_log = schemas.PlayerMoveLogCreateSchema(
+        current_player_turn=current_player.nick_name,
+        board_status=game.board,
+        game_status=game.status,
+        related_game=game.id,
+        step=game.moves_count,
+    )
+    await crud.player_move_log.create(db=db, obj_in=player_move_log)
 
     return True
 
@@ -161,9 +169,10 @@ async def websocket_endpoint(websocket: WebSocket, game_uuid: str):
 async def get_games(
     db: AsyncSession = Depends(deps.get_db_async),
     current_player: models.Player = Depends(deps.get_current_user),
+    game_status: schemas.GameStatus = schemas.GameStatus.PENDING.value,
 ) -> list[schemas.PendingGameResponse]:
 
-    results = await crud.game.get_pending_games(db=db)
+    results = await crud.game.get_pending_games(db=db, game_status=game_status)
     pydantic_game_schema = []
 
     for result in results:
@@ -186,3 +195,20 @@ async def get_current_game(
     pydantic_game_schema = schemas.GameResponse.from_orm(game)
 
     return pydantic_game_schema
+
+
+@router.get("/review_game")
+async def review_finished_game_steps(
+    db: AsyncSession = Depends(deps.get_db_async),
+    current_player: models.Player = Depends(deps.get_current_user),
+    game_uuid: str = Query(...),
+    game_step: int = Query(None),
+):
+    game = await crud.game.get_by_uuid(db=db, _uuid=game_uuid)
+    if not game_step:
+        game_step = game.moves_count
+
+    specific_game_step = await crud.player_move_log.get_by_game_id_step(
+        db=db, game_id=game.id, step=game_step
+    )
+    return schemas.PlayerMoveLogResponseSchema.from_orm(specific_game_step)

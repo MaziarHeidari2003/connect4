@@ -39,17 +39,23 @@ class CRUDGame(CRUDBase[Game, GameCreateSchema, GameUpdateSchema]):
         query = select(self.model).where(self.model.uuid == _uuid)
         return await self._first(db.scalars(query))
 
-    async def get_pending_games(self, db: AsyncSession):
+    async def get_pending_games(
+        self, db: AsyncSession, game_status: schemas.GameStatus
+    ):
+        p1 = aliased(models.Player)
+        p2 = aliased(models.Player)
         query = (
             select(
                 self.model.uuid,
                 self.model.status,
                 self.model.created,
                 self.model.board,
-                models.Player.nick_name.label("player_1_nick"),
+                p1.nick_name.label("player_1_nick"),
+                p2.nick_name.label("player_2_nick"),
             )
-            .where(self.model.status == schemas.GameStatus.PENDING.value)
-            .join(models.Player, self.model.player_1 == models.Player.id)
+            .where(self.model.status == game_status)
+            .join(p1, self.model.player_1 == p1.id)
+            .join(p2, self.model.player_2 == p2.id, isouter=True)
             .order_by(self.model.created)
         )
         result = await db.execute(query)

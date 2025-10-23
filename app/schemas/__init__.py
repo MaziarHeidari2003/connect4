@@ -13,3 +13,10 @@ from .game import (
     GameResponse,
     PendingGameResponse,
 )
+
+from .player_move_log import (
+    PlayerMoveLogBaseSchema,
+    PlayerMoveLogCreateSchema,
+    PlayerMoveLogUpdateSchema,
+    PlayerMoveLogResponseSchema,
+)

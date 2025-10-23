@@ -3,11 +3,6 @@ from typing import Any, List, Optional, Union
 from pydantic import EmailStr, PostgresDsn, RedisDsn, field_validator, ValidationInfo
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
-REDIS_ACTIVE_FLOW_NAMESPACE: str = "recom-system:flow:flow_id_{}:services_{}:action_{}"
-REDIS_ACTIVE_PHONE_NAMESPACE: str = (
-    "recom-system:phone_{}:flow_id_{}:services_{}:action_{}"
-)
-
 
 class AsyncPostgresDsn(PostgresDsn):
     allowed_schemes = {"postgres+asyncpg", "postgresql+asyncpg"}
@@ -50,7 +45,7 @@ class Settings(BaseSettings):
     # @see https://aio-pika.readthedocs.io/en/latest/rabbitmq-tutorial/2-work-queues.html#fair-dispatch
     CONSUMER_PREFETCH_COUNT: int = 1
 
-    SUB_PATH: str = "/connect4"
+    SUB_PATH: str = ""
 
     BACKEND_CORS_ORIGINS: List[str] = []
 
