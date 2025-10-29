@@ -146,6 +146,18 @@ async def make_move(
         game.status = schemas.GameStatus.FINISHED
 
     game = await crud.game.update(db=db, db_obj=game)
+    # Send updated game info to both players via WebSocket
+    await broadcast_update(
+        game_uuid,
+        {
+            "board": game.board,
+            "status": game.status,
+            "current_turn": game.current_turn,
+            "winner": game.winner,
+            "moves_count": game.moves_count,
+        },
+    )
+
     player_move_log = schemas.PlayerMoveLogCreateSchema(
         current_player_turn=current_player.nick_name,
         board_status=game.board,
@@ -156,27 +168,6 @@ async def make_move(
     await crud.player_move_log.create(db=db, obj_in=player_move_log)
 
     return True
-
-
-active_connections = []
-
-
-@router.websocket("/ws/{game_uuid}")
-async def websocket_endpoint(websocket: WebSocket, game_uuid: str):
-    await websocket.accept()
-    active_connections.append(websocket)
-    print(f"Client connected to game {game_uuid}")
-    try:
-        while True:
-            data = websocket.receive_text()
-            print(f"Message from client: {data}")
-
-            for conn in active_connections:
-                await conn.send_text(f"Game {game_uuid}: {data}")
-
-    except WebSocketDisconnect:
-        print("Client disconnected")
-        active_connections.remove(websocket)
 
 
 @router.get("/")
@@ -246,3 +237,44 @@ async def review_finished_game_steps(
         raise HTTPException(status_code=404, detail="No move log found for this step")
 
     return schemas.PlayerMoveLogResponseSchema.from_orm(specific_game_step)
+
+
+from fastapi import WebSocket, WebSocketDisconnect
+from typing import Dict, List
+import json
+
+active_connections: Dict[str, List[WebSocket]] = {}  # game_uuid -> list of connections
+
+
+async def connect_player(game_uuid: str, websocket: WebSocket):
+    await websocket.accept()
+    if game_uuid not in active_connections:
+        active_connections[game_uuid] = []
+    active_connections[game_uuid].append(websocket)
+
+
+async def disconnect_player(game_uuid: str, websocket: WebSocket):
+    if game_uuid in active_connections:
+        active_connections[game_uuid].remove(websocket)
+        if not active_connections[game_uuid]:
+            del active_connections[game_uuid]
+
+
+async def broadcast_update(game_uuid: str, data: dict):
+    """Send a JSON update to all players watching the same game."""
+    if game_uuid in active_connections:
+        for ws in active_connections[game_uuid]:
+            try:
+                await ws.send_json(data)
+            except Exception:
+                await disconnect_player(game_uuid, ws)
+
+
+@router.websocket("/ws/{game_uuid}")
+async def websocket_endpoint(websocket: WebSocket, game_uuid: str):
+    await connect_player(game_uuid, websocket)
+    try:
+        while True:
+            await websocket.receive_text()
+    except WebSocketDisconnect:
+        await disconnect_player(game_uuid, websocket)
