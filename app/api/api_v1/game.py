@@ -247,7 +247,15 @@ active_connections: Dict[str, List[WebSocket]] = {}  # game_uuid -> list of conn
 
 
 async def connect_player(game_uuid: str, websocket: WebSocket):
+    if (
+        isinstance(game_uuid, str)
+        and game_uuid.startswith('"')
+        and game_uuid.endswith('"')
+    ):
+        game_uuid = game_uuid.strip('"')
+
     await websocket.accept()
+
     if game_uuid not in active_connections:
         active_connections[game_uuid] = []
     active_connections[game_uuid].append(websocket)
