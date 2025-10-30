@@ -280,6 +280,13 @@ async def broadcast_update(game_uuid: str, data: dict):
 
 @router.websocket("/ws/{game_uuid}")
 async def websocket_endpoint(websocket: WebSocket, game_uuid: str):
+    if (
+        isinstance(game_uuid, str)
+        and game_uuid.startswith('"')
+        and game_uuid.endswith('"')
+    ):
+        game_uuid = game_uuid.strip('"')
+
     await connect_player(game_uuid, websocket)
     try:
         while True:
