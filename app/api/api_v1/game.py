@@ -79,6 +79,17 @@ async def join_game(
     game.status = schemas.GameStatus.IN_PROGRESS.value
     game = await crud.game.update(db=db, db_obj=game)
 
+    await connection_manager.broadcast_update(
+        game_uuid,
+        {
+            "board": game.board,
+            "status": game.status,
+            "current_turn": game.current_turn,
+            "winner": game.winner,
+            "moves_count": game.moves_count,
+        },
+    )
+
     return True
 
 
