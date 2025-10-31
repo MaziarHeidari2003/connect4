@@ -1,5 +1,4 @@
 from typing import Any, List, Optional, Union
-
 from pydantic import EmailStr, PostgresDsn, RedisDsn, field_validator, ValidationInfo
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
