@@ -17,6 +17,8 @@ class SchedulerApp:
                 run_times_key="apscheduler.run_times",
                 host=settings.REDIS_SERVER,
                 port=settings.REDIS_PORT,
+                username=settings.REDIS_USERNAME,
+                password=settings.REDIS_PASSWORD,
                 db=0,
             )
         }
