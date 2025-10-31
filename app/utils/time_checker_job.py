@@ -66,7 +66,6 @@ async def player_time_limit_check(
             game.winner = (
                 game.player_1 if current_turn == game.player_2 else game.player_2
             )
-            game.moves_count = move_num
             await crud.game.update(db=db, db_obj=game)
             await publish_game_update(
                 game_uuid,
