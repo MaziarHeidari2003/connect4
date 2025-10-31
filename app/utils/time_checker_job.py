@@ -58,7 +58,6 @@ def schedule_remover(game_uuid: uuid.UUID, move_num: int):
 async def player_time_limit_check(
     game_uuid: uuid.UUID, current_turn: str, move_num: int
 ):
-    print(f"Background task for game {game_uuid} started")
     async with async_session() as db:
         game = await crud.game.get_by_uuid(db=db, _uuid=game_uuid)
         if game.current_turn == current_turn:
