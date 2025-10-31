@@ -185,7 +185,7 @@ async def make_move(
         step=game.moves_count,
     )
     await crud.player_move_log.create(db=db, obj_in=player_move_log)
-    await schedule_remover(game_uuid=game.uuid, move_num=game.moves_count)
+    schedule_remover(game_uuid=game.uuid, move_num=game.moves_count)
     await schedule_player_time(
         current_turn=game.current_turn,
         game_uuid=game.uuid,
