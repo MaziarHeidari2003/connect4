@@ -33,7 +33,10 @@ class ConnectionManager:
                 try:
                     await ws.send_json(data)
                 except Exception:
+                    print("no connections to game found")
                     await self.disconnect_player(game_uuid, ws)
+        else:
+            print("game not found")            
 
 
 connection_manager = ConnectionManager()
