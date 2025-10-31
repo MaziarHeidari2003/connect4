@@ -110,7 +110,7 @@ async def make_move(
     db: AsyncSession = Depends(deps.get_db_async),
     current_player: models.Player = Depends(deps.get_current_user),
 ) -> bool:
-    async with RedisMutex(name="lock_make_move"):
+    async with RedisMutex(name=str(game_uuid)):
 
         if (
             isinstance(game_uuid, str)
