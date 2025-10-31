@@ -8,6 +8,7 @@ class AsyncPostgresDsn(PostgresDsn):
 
 
 class Settings(BaseSettings):
+    TIME_LIMIT_TO_MAKE_MOVE: int
     TZ: str = "Asia/Tehran"
     CORS_ALLOWED_ORIGINS: List[str]
     CRUD_CACHE_REDIS_EXPIRATION_TIME: int = 60 * 20  # 20 min

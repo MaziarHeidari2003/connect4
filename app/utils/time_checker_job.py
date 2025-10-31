@@ -74,6 +74,6 @@ async def schedule_player_time(game_uuid: uuid.UUID, current_turn: str, move_num
             "move_num": move_num,
         },
         trigger="date",
-        run_date=datetime.now() + timedelta(seconds=4),
+        run_date=datetime.now() + timedelta(seconds=settings.TIME_LIMIT_TO_MAKE_MOVE),
         id=f"{move_num}_{str(game_uuid)}",
     )
