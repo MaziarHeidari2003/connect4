@@ -36,7 +36,7 @@ class ConnectionManager:
                     print("no connections to game found")
                     await self.disconnect_player(game_uuid, ws)
         else:
-            print("game not found")            
+            print("game not found")
 
 
 connection_manager = ConnectionManager()

@@ -8,6 +8,7 @@ from datetime import datetime, timedelta
 from app import crud, schemas
 from app.core.security import settings
 from app.utils.connection_manager import connection_manager
+from app.utils.publisher import publish_game_update
 
 
 class SchedulerApp:
@@ -62,10 +63,12 @@ async def player_time_limit_check(
         game = await crud.game.get_by_uuid(db=db, _uuid=game_uuid)
         if game.current_turn == current_turn:
             game.status = schemas.GameStatus.FINISHED
-            game.winner = game.player_1 if current_turn == game.player_2 else game.player_2
+            game.winner = (
+                game.player_1 if current_turn == game.player_2 else game.player_2
+            )
             game.moves_count = move_num
             await crud.game.update(db=db, db_obj=game)
-            await connection_manager.broadcast_update(
+            await publish_game_update(
                 game_uuid,
                 {
                     "board": game.board,
@@ -75,7 +78,7 @@ async def player_time_limit_check(
                     "moves_count": game.moves_count,
                 },
             )
-            print('Broadcast to all connected sockets done')
+            print("Broadcast to all connected sockets done")
 
 
 async def schedule_player_time(game_uuid: uuid.UUID, current_turn: int, move_num: int):

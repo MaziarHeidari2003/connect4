@@ -5,6 +5,8 @@ from fastapi.middleware.trustedhost import TrustedHostMiddleware
 from fastapi.openapi.utils import get_openapi
 from app.api.api_v1.api import api_router
 from app.utils.time_checker_job import scheduler_app
+import asyncio
+from app.consumers.redis_subscriber import subscribe_to_game_updates
 
 app = FastAPI(title=settings.PROJECT_NAME, root_path="/connect4")
 if settings.DEBUG:
@@ -47,6 +49,7 @@ app.openapi = custom_openapi
 async def on_startup():
     if settings.USE_APSCHEDULER:
         scheduler_app.scheduler.start()
+        asyncio.create_task(subscribe_to_game_updates())
 
 
 @app.on_event("shutdown")
