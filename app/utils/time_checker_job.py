@@ -7,6 +7,7 @@ import asyncio, uuid
 from datetime import datetime, timedelta
 from app import crud, schemas
 from app.core.security import settings
+from app.utils.connection_manager import connection_manager
 
 
 class SchedulerApp:
@@ -65,6 +66,16 @@ async def player_time_limit_check(
             game.winner = game.player_1 if current_turn == "player2" else game.player_2
             game.moves_count = move_num
             await crud.game.update(db=db, db_obj=game)
+            await connection_manager.broadcast_update(
+                game_uuid,
+                {
+                    "board": game.board,
+                    "status": game.status,
+                    "current_turn": game.current_turn,
+                    "winner": game.winner,
+                    "moves_count": game.moves_count,
+                },
+            )
 
 
 async def schedule_player_time(game_uuid: uuid.UUID, current_turn: str, move_num: int):
