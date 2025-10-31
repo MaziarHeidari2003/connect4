@@ -76,6 +76,7 @@ async def player_time_limit_check(
                     "moves_count": game.moves_count,
                 },
             )
+            print('Broadcast to all connected sockets done')
 
 
 async def schedule_player_time(game_uuid: uuid.UUID, current_turn: str, move_num: int):
