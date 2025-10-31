@@ -191,7 +191,6 @@ async def make_move(
         game_uuid=game.uuid,
         move_num=game.moves_count + 1,
     )
-    print("asshole")
     return True
 
 

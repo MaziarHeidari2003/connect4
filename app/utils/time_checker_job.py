@@ -56,13 +56,13 @@ def schedule_remover(game_uuid: uuid.UUID, move_num: int):
 
 
 async def player_time_limit_check(
-    game_uuid: uuid.UUID, current_turn: str, move_num: int
+    game_uuid: uuid.UUID, current_turn: int, move_num: int
 ):
     async with async_session() as db:
         game = await crud.game.get_by_uuid(db=db, _uuid=game_uuid)
         if game.current_turn == current_turn:
             game.status = schemas.GameStatus.FINISHED
-            game.winner = game.player_1 if current_turn == "player2" else game.player_2
+            game.winner = game.player_1 if current_turn == game.player_2 else game.player_2
             game.moves_count = move_num
             await crud.game.update(db=db, db_obj=game)
             await connection_manager.broadcast_update(
@@ -78,7 +78,7 @@ async def player_time_limit_check(
             print('Broadcast to all connected sockets done')
 
 
-async def schedule_player_time(game_uuid: uuid.UUID, current_turn: str, move_num: int):
+async def schedule_player_time(game_uuid: uuid.UUID, current_turn: int, move_num: int):
     scheduler_app.scheduler.add_job(
         player_time_limit_check,
         kwargs={
