@@ -50,3 +50,30 @@ def schedule_remover(game_uuid: uuid.UUID, move_num: int):
     scheduler_app.scheduler.remove_job(
         job_id=f"{move_num}_{str(game_uuid)}",
     )
+
+
+async def player_time_limit_check(
+    game_uuid: uuid.UUID, current_turn: str, move_num: int
+):
+    print(f"Background task for game {game_uuid} started")
+    async with async_session() as db:
+        game = await crud.game.get_by_uuid(db=db, _uuid=game_uuid)
+        if game.current_turn == current_turn:
+            game.status = schemas.GameStatus.FINISHED
+            game.winner = game.player_1 if current_turn == "player2" else game.player_2
+            game.moves_count = move_num
+            await crud.game.update(db=db, db_obj=game)
+
+
+async def schedule_player_time(game_uuid: uuid.UUID, current_turn: str, move_num: int):
+    scheduler_app.scheduler.add_job(
+        player_time_limit_check,
+        kwargs={
+            "game_uuid": game_uuid,
+            "current_turn": current_turn,
+            "move_num": move_num,
+        },
+        trigger="date",
+        run_date=datetime.now() + timedelta(seconds=4),
+        id=f"{move_num}_{str(game_uuid)}",
+    )

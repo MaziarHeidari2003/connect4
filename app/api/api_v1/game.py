@@ -13,7 +13,11 @@ from app import schemas, models, crud
 import uuid
 from app.utils.helpers import winner_move
 from sqlalchemy.orm.attributes import flag_modified
-from app.utils.time_checker_job import schedule_checker, schedule_remover
+from app.utils.time_checker_job import (
+    schedule_checker,
+    schedule_player_time,
+    schedule_remover,
+)
 from app.utils.connection_manager import connection_manager
 from app.core.security import settings
 
@@ -88,6 +92,10 @@ async def join_game(
             "winner": game.winner,
             "moves_count": game.moves_count,
         },
+    )
+    print(game.current_turn)
+    await schedule_player_time(
+        game_uuid=game.uuid, current_turn=game.current_turn, move_num=1
     )
 
     return True
@@ -177,7 +185,13 @@ async def make_move(
         step=game.moves_count,
     )
     await crud.player_move_log.create(db=db, obj_in=player_move_log)
-
+    await schedule_remover(game_uuid=game.uuid, move_num=game.moves_count)
+    await schedule_player_time(
+        current_turn=game.current_turn,
+        game_uuid=game.uuid,
+        move_num=game.moves_count + 1,
+    )
+    print("asshole")
     return True
 
 
