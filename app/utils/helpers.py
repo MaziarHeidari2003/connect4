@@ -22,7 +22,7 @@ def winner_move(column_count: int, row_count: int, player_move: int, board: list
                 return True
 
     # diagonal
-    for c in range(column_count - 3):
+    for c in range(column_count - 2):
         for r in range(row_count - 3):
             if (
                 board[c][r] == player_move
