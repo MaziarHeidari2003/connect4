@@ -212,7 +212,7 @@ async def get_games(
     game_status: schemas.GameStatus = schemas.GameStatus.PENDING.value,
 ) -> list[schemas.PendingGameResponse]:
 
-    results = await crud.game.get_pending_games(db=db, game_status=game_status)
+    results = await crud.game.get_games(db=db, game_status=game_status)
     pydantic_game_schema = []
 
     for result in results:
@@ -292,3 +292,15 @@ async def websocket_endpoint(websocket: WebSocket, game_uuid: str):
             await websocket.receive_text()
     except WebSocketDisconnect:
         await connection_manager.disconnect_player(game_uuid, websocket)
+
+
+@router.get("/current_player_active_game")
+async def get_current_player_game_uuid(
+    db: AsyncSession = Depends(deps.get_db_async),
+    current_player: models.Player = Depends(deps.get_current_user),
+):
+    active_game_uuid = await crud.game.get_current_player_active_game_uuid(
+        db=db, player_id=current_player.id
+    )
+
+    return active_game_uuid

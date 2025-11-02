@@ -5,6 +5,7 @@ from app.schemas import GameCreateSchema, GameUpdateSchema
 from sqlalchemy.future import select
 from app import schemas, models
 from sqlalchemy.orm import aliased
+from sqlalchemy import select, or_
 
 
 class CRUDGame(CRUDBase[Game, GameCreateSchema, GameUpdateSchema]):
@@ -39,9 +40,7 @@ class CRUDGame(CRUDBase[Game, GameCreateSchema, GameUpdateSchema]):
         query = select(self.model).where(self.model.uuid == _uuid)
         return await self._first(db.scalars(query))
 
-    async def get_pending_games(
-        self, db: AsyncSession, game_status: schemas.GameStatus
-    ):
+    async def get_games(self, db: AsyncSession, game_status: schemas.GameStatus):
         p1 = aliased(models.Player)
         p2 = aliased(models.Player)
         query = (
@@ -60,6 +59,18 @@ class CRUDGame(CRUDBase[Game, GameCreateSchema, GameUpdateSchema]):
         )
         result = await db.execute(query)
         return result.all()
+
+    async def get_current_player_active_game_uuid(
+        self, db: AsyncSession, player_id: int
+    ):
+        query = select(self.model.uuid).where(
+            or_(
+                self.model.player_1 == player_id,
+                self.model.player_2 == player_id,
+            ),
+            self.model.status == schemas.GameStatus.IN_PROGRESS,
+        )
+        return await self._first(db.scalars(query))
 
 
 game = CRUDGame(Game)
