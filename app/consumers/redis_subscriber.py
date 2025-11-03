@@ -1,10 +1,8 @@
-# app/redis_subscriber.py
-import asyncio
 import json
 from app.utils.redis_connector import redis_connector
 from app.utils.connection_manager import (
     connection_manager,
-)  # your ConnectionManager instance
+)
 
 
 async def subscribe_to_game_updates():
@@ -16,7 +14,7 @@ async def subscribe_to_game_updates():
     pubsub = redis_client.pubsub()
     await pubsub.subscribe("game_updates")
 
-    print("✅ Subscribed to Redis channel: game_updates")
+    print("Subscribed to Redis channel: game_updates")
 
     async for message in pubsub.listen():
         if message is None or message["type"] != "message":
