@@ -43,7 +43,6 @@ async def create_game(
         uuid=uuid.uuid4(),
         created_by=current_player.id,
         status=schemas.GameStatus.PENDING.value,
-        current_turn=current_player.id,
         moves_count=0,
     )
 
@@ -80,13 +79,13 @@ async def join_game(
             detail="You can't join this game, two players have taken the game",
         )
 
-    random_num = random.randint(1, 6)
-    if random_num >= 3:
-        game.player_2 = current_player.id
-        game.player_1 = game.created_by
-    else:
+    if random.choice([True, False]):
         game.player_1 = current_player.id
         game.player_2 = game.created_by
+    else:
+        game.player_2 = current_player.id
+        game.player_1 = game.created_by
+    game.current_turn = game.player_1
     game.status = schemas.GameStatus.IN_PROGRESS.value
     game = await crud.game.update(db=db, db_obj=game)
 
