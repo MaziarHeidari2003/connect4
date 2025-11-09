@@ -53,10 +53,12 @@ class CRUDGame(CRUDBase[Game, GameCreateSchema, GameUpdateSchema]):
                 p2.nick_name.label("player_2_nick"),
             )
             .where(self.model.status == game_status)
-            .join(p1, self.model.player_1 == p1.id)
-            .join(p2, self.model.player_2 == p2.id, isouter=True)
             .order_by(self.model.created)
         )
+        if game_status != schemas.GameStatus.PENDING:
+            query = query.join(p1, self.model.player_1 == p1.id).join(
+                p2, self.model.player_2 == p2.id, isouter=True
+            )
         result = await db.execute(query)
         return result.all()
 
