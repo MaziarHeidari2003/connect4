@@ -49,8 +49,7 @@ class CRUDGame(CRUDBase[Game, GameCreateSchema, GameUpdateSchema]):
                 self.model.status,
                 self.model.created,
                 self.model.board,
-                p1.nick_name.label("player_1_nick"),
-                p2.nick_name.label("player_2_nick"),
+                self.model.created_by,
             )
             .where(self.model.status == game_status)
             .order_by(self.model.created)
