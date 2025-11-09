@@ -168,6 +168,7 @@ async def make_move(
             column_count=6, row_count=5, player_move=player_move, board=board
         ):
             game.winner = current_player.id
+            game.winner_nick_name = current_player.nick_name
             game.status = schemas.GameStatus.FINISHED
 
         if game.moves_count == 42 and (not game.winner):
@@ -181,7 +182,7 @@ async def make_move(
                 "board": game.board,
                 "status": game.status,
                 "current_turn": game.current_turn,
-                "winner": game.winner,
+                "winner": game.winner_nick_name,
                 "moves_count": game.moves_count,
             },
         )
