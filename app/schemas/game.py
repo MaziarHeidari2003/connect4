@@ -14,7 +14,7 @@ class GameCreateSchema(BaseModel):
     uuid: _uuid.UUID | None = None
     board: list
     status: GameStatus | None = None
-    player_1: int | None = None
+    created_by: int | None = None
     current_turn: int
     moves_count: int
 

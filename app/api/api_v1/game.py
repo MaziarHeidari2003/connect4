@@ -10,7 +10,7 @@ from fastapi import (
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.api import deps
 from app import schemas, models, crud
-import uuid
+import uuid, random
 from app.utils.helpers import winner_move
 from sqlalchemy.orm.attributes import flag_modified
 from app.utils.time_checker_job import (
@@ -41,7 +41,7 @@ async def create_game(
             [0, 0, 0, 0, 0, 0],
         ],
         uuid=uuid.uuid4(),
-        player_1=current_player.id,
+        created_by=current_player.id,
         status=schemas.GameStatus.PENDING.value,
         current_turn=current_player.id,
         moves_count=0,
@@ -80,7 +80,13 @@ async def join_game(
             detail="You can't join this game, two players have taken the game",
         )
 
-    game.player_2 = current_player.id
+    random_num = random.randint(1, 6)
+    if random_num >= 3:
+        game.player_2 = current_player.id
+        game.player_1 = game.created_by
+    else:
+        game.player_1 = current_player.id
+        game.player_2 = game.created_by
     game.status = schemas.GameStatus.IN_PROGRESS.value
     game = await crud.game.update(db=db, db_obj=game)
 
