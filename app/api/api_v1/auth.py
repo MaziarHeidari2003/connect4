@@ -1,4 +1,5 @@
 from fastapi import APIRouter, HTTPException, status, Depends
+from fastapi.responses import JSONResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 from app import schemas, crud
 from fastapi.encoders import jsonable_encoder
@@ -43,5 +44,20 @@ async def login_access_token(
     token_data = security.generate_access_token(player_data)
     player_data["access_token"] = token_data["token"]
     player_data["expire_time"] = token_data["expire_time"]
-    login_result = schemas.LoginOutput(**player_data)
-    return login_result
+    # login_result = schemas.LoginOutput(**player_data)
+    # return login_result
+
+    response = JSONResponse(
+        content={"user": player_data, "expire_time": token_data["expire_time"]}
+    )
+
+    response.set_cookie(
+        key="access_token",
+        value=token_data["token"],
+        httponly=True,
+        secure=True,
+        samesite="none",
+        path="/",
+    )
+
+    return response
