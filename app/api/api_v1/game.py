@@ -136,6 +136,17 @@ async def make_move(
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST, detail="The game doesn't exist"
             )
+
+        if game.status == schemas.GameStatus.FINISHED:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST, detail="The game is over"
+            )
+        if game.status == schemas.GameStatus.PENDING:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="The game is not started yet",
+            )
+
         if current_player.id != game.current_turn:
             game.winner = (
                 game.player_1 if game.player_1 != current_player.id else game.player_2
@@ -160,16 +171,6 @@ async def make_move(
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="It was't your turn. You lost the game honey.",
-            )
-
-        if game.status == schemas.GameStatus.FINISHED:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST, detail="The game is over"
-            )
-        if game.status == schemas.GameStatus.PENDING:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="The game is not started yet",
             )
 
         if chosen_column > 6 or chosen_column < 0:
@@ -401,7 +402,6 @@ async def leave_game(
     if game.status == schemas.GameStatus.FINISHED:
         return {"detail": "Game already finished"}
 
-    # Identify winner based on who left
     if player_id == game.player_1:
         winner_id = game.player_2
         winner_nick = game.player_2_nick_name
@@ -414,7 +414,7 @@ async def leave_game(
     game.status = schemas.GameStatus.FINISHED
 
     game = await crud.game.update(db=db, db_obj=game)
-
+    current_player_turn = await crud.player.get(db=db, id=game.current_turn)
     try:
         schedule_remover(game_uuid=game.uuid, move_num=game.moves_count + 1)
     except Exception:
@@ -427,6 +427,7 @@ async def leave_game(
             "status": game.status,
             "winner": winner_nick,
             "moves_count": game.moves_count,
+            "current_turn": current_player_turn.nick_name,
         },
     )
 
