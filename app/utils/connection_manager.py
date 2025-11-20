@@ -28,15 +28,21 @@ class ConnectionManager:
                 del self.active_connections[game_uuid]
 
     async def broadcast_update(self, game_uuid: str, data: dict):
-        if game_uuid in self.active_connections:
-            for ws in self.active_connections[game_uuid]:
-                try:
-                    await ws.send_json(data)
-                except Exception:
-                    print("no connections to game found")
-                    await self.disconnect_player(game_uuid, ws)
-        else:
+
+        if game_uuid not in self.active_connections:
             print("game not found")
+            return
+
+        dead = []
+        for ws in self.active_connections[game_uuid]:
+            try:
+                await ws.send_json(data)
+            except Exception:
+                dead.append(ws)
+
+        for ws in dead:
+            await self.disconnect_player(game_uuid, ws)
+        print(f"{len(dead)} sockets are disconnected")
 
 
 connection_manager = ConnectionManager()

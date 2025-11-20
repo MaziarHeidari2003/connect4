@@ -371,6 +371,10 @@ async def websocket_endpoint(websocket: WebSocket, game_uuid: str):
         await connection_manager.disconnect_player(game_uuid, websocket)
         print(f"Disconnecting one of the legs of the socket from {game_uuid}")
 
+    except Exception as e:
+        print("WebSocket error:", e)
+        await connection_manager.disconnect_player(game_uuid, websocket)
+
 
 @router.get("/current_player_active_game")
 async def get_current_player_game_uuid(
