@@ -399,7 +399,7 @@ async def leave_game(
     if not game:
         raise HTTPException(status_code=404, detail="Game not found")
 
-    if game.status == schemas.GameStatus.FINISHED:
+    if game.status in (schemas.GameStatus.FINISHED, schemas.GameStatus.PENDING):
         return {"detail": "Game already finished"}
 
     if player_id == game.player_1:
