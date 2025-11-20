@@ -260,7 +260,7 @@ async def make_move(
                 "moves_count": game.moves_count,
                 "last_move": chosen_column,
                 "end_reason": (
-                    f"{game.winner_nick_name} won the game!"
+                    f"{game.winner_nick_name} played better!"
                     if game.winner is not None
                     else None
                 ),
