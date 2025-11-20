@@ -286,13 +286,13 @@ async def get_games(
     db: AsyncSession = Depends(deps.get_db_async),
     current_player: models.Player = Depends(deps.get_current_user),
     game_status: schemas.GameStatus = schemas.GameStatus.PENDING.value,
-) -> list[schemas.PendingGameResponse]:
+) -> list[schemas.GameResponse]:
 
     results = await crud.game.get_games(db=db, game_status=game_status)
     pydantic_game_schema = []
 
     for result in results:
-        pydantic_game_schema.append(schemas.PendingGameResponse.from_orm(result))
+        pydantic_game_schema.append(schemas.GameResponse.from_orm(result))
 
     return pydantic_game_schema
 

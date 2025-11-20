@@ -11,7 +11,6 @@ from .game import (
     GameUpdateSchema,
     GameStatus,
     GameResponse,
-    PendingGameResponse,
 )
 
 from .player_move_log import (
