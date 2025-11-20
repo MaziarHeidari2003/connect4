@@ -64,12 +64,16 @@ class CRUDGame(CRUDBase[Game, GameCreateSchema, GameUpdateSchema]):
     async def get_current_player_active_game_uuid(
         self, db: AsyncSession, player_id: int
     ):
-        query = select(self.model.uuid).where(
-            or_(
-                self.model.player_1 == player_id,
-                self.model.player_2 == player_id,
-            ),
-            self.model.status == schemas.GameStatus.IN_PROGRESS,
+        query = (
+            select(self.model.uuid)
+            .where(
+                or_(
+                    self.model.player_1 == player_id,
+                    self.model.player_2 == player_id,
+                ),
+                self.model.status == schemas.GameStatus.IN_PROGRESS,
+            )
+            .order_by(self.model.created)
         )
         return await self._first(db.scalars(query))
 
