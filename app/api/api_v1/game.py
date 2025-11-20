@@ -391,16 +391,9 @@ async def get_current_player_game_uuid(
 @router.post("/leave-game")
 async def leave_game(
     game_uuid: str = Query(...),
-    current_player: models.Player = Depends(deps.get_current_user),
+    player_id: int = Query(...),
     db: AsyncSession = Depends(deps.get_db_async),
 ):
-    if (
-        isinstance(game_uuid, str)
-        and game_uuid.startswith('"')
-        and game_uuid.endswith('"')
-    ):
-        game_uuid = game_uuid.strip('"')
-
     game = await crud.game.get_by_uuid(db=db, _uuid=game_uuid)
     if not game:
         raise HTTPException(status_code=404, detail="Game not found")
@@ -408,7 +401,8 @@ async def leave_game(
     if game.status == schemas.GameStatus.FINISHED:
         return {"detail": "Game already finished"}
 
-    if current_player.id == game.player_1:
+    # Identify winner based on who left
+    if player_id == game.player_1:
         winner_id = game.player_2
         winner_nick = game.player_2_nick_name
     else:
