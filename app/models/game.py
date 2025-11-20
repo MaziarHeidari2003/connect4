@@ -13,6 +13,8 @@ class Game(Base):
     board: Mapped[list] = mapped_column(MutableList.as_mutable(JSONB), default=list)
     moves_count: Mapped[int] = mapped_column(INTEGER, nullable=True, default=0)
     winner_nick_name: Mapped[str] = mapped_column(String, nullable=True)
+    player_2_nick_name: Mapped[str] = mapped_column(String, nullable=True)
+    player_1_nick_name: Mapped[str] = mapped_column(String, nullable=True)
     created_by: Mapped[int] = mapped_column(
         ForeignKey(Player.id, ondelete="SET NULL"), index=True, nullable=True
     )

@@ -41,8 +41,6 @@ class CRUDGame(CRUDBase[Game, GameCreateSchema, GameUpdateSchema]):
         return await self._first(db.scalars(query))
 
     async def get_games(self, db: AsyncSession, game_status: schemas.GameStatus):
-        p1 = aliased(models.Player)
-        p2 = aliased(models.Player)
         query = (
             select(
                 self.model.uuid,
@@ -50,14 +48,16 @@ class CRUDGame(CRUDBase[Game, GameCreateSchema, GameUpdateSchema]):
                 self.model.created,
                 self.model.board,
                 self.model.created_by,
+                self.model.player_1_nick_name,
+                self.model.player_2_nick_name,
+                models.Player.nick_name.label("creator_nick_name"),
             )
+            .join(models.Player, self.model.created_by == models.Player.id)
             .where(self.model.status == game_status)
             .order_by(self.model.created)
         )
         if game_status != schemas.GameStatus.PENDING:
-            query = query.join(p1, self.model.player_1 == p1.id).join(
-                p2, self.model.player_2 == p2.id, isouter=True
-            )
+            query = query
         result = await db.execute(query)
         return result.all()
 

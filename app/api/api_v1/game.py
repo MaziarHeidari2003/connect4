@@ -79,12 +79,18 @@ async def join_game(
             detail="You can't join this game, two players have taken the game",
         )
 
+    creator = await crud.player.get(db=db, id=game.created_by)
+
     if random.choice([True, False]):
         game.player_1 = current_player.id
+        game.player_1_nick_name = current_player.nick_name
         game.player_2 = game.created_by
+        game.player_2_nick_name = creator.nick_name
     else:
         game.player_2 = current_player.id
+        game.player_2_nick_name = current_player.nick_name
         game.player_1 = game.created_by
+        game.player_1_nick_name = creator.nick_name
     game.current_turn = game.player_1
     game.status = schemas.GameStatus.IN_PROGRESS.value
     game = await crud.game.update(db=db, db_obj=game)
@@ -130,9 +136,31 @@ async def make_move(
                 status_code=status.HTTP_400_BAD_REQUEST, detail="The game doesn't exist"
             )
         if current_player.id != game.current_turn:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST, detail="It is not your turn"
+            game.winner = (
+                game.player_1 if game.player_1 != current_player.id else game.player_2
             )
+            game.winner_nick_name = (
+                game.player_1_nick_name
+                if game.player_1 != current_player.id
+                else game.player_2_nick_name
+            )
+            game.status = schemas.GameStatus.FINISHED
+            await crud.game.update(db=db, db_obj=game)
+
+            await connection_manager.broadcast_update(
+                game_uuid,
+                {
+                    "board": game.board,
+                    "status": game.status,
+                    "winner": game.winner_nick_name,
+                    "moves_count": game.moves_count,
+                },
+            )
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="It was't your turn. You lost the game honey.",
+            )
+
         if game.status == schemas.GameStatus.FINISHED:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST, detail="The game is over"
@@ -144,17 +172,59 @@ async def make_move(
             )
 
         if chosen_column > 6 or chosen_column < 0:
+            game.winner = (
+                game.player_1 if game.player_1 != current_player.id else game.player_2
+            )
+            game.winner_nick_name = (
+                game.player_1_nick_name
+                if game.player_1 != current_player.id
+                else game.player_2_nick_name
+            )
+            game.status = schemas.GameStatus.FINISHED
+            await crud.game.update(db=db, db_obj=game)
+
+            await connection_manager.broadcast_update(
+                game_uuid,
+                {
+                    "board": game.board,
+                    "status": game.status,
+                    "winner": game.winner_nick_name,
+                    "moves_count": game.moves_count,
+                },
+            )
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Chosen column index is not valid",
+                detail="Chosen column index is not valid. You lost the game honey",
             )
 
         player_move = 1 if current_player.id == game.player_1 else 2
         board = game.board
         if board[chosen_column].count(1) + board[chosen_column].count(2) == 6:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST, detail="This column is full"
+            game.winner = (
+                game.player_1 if game.player_1 != current_player.id else game.player_2
             )
+            game.winner_nick_name = (
+                game.player_1_nick_name
+                if game.player_1 != current_player.id
+                else game.player_2_nick_name
+            )
+            game.status = schemas.GameStatus.FINISHED
+            await crud.game.update(db=db, db_obj=game)
+
+            await connection_manager.broadcast_update(
+                game_uuid,
+                {
+                    "board": game.board,
+                    "status": game.status,
+                    "winner": game.winner_nick_name,
+                    "moves_count": game.moves_count,
+                },
+            )
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="This column is full, You lost the game honey,",
+            )
+
         last_0_index = board[chosen_column].index(0)
         board[chosen_column][last_0_index] = player_move
         game.board = board
@@ -175,13 +245,13 @@ async def make_move(
             game.status = schemas.GameStatus.FINISHED
 
         game = await crud.game.update(db=db, db_obj=game)
-
+        current_turn_player = await crud.player.get(db=db, id=game.current_turn)
         await connection_manager.broadcast_update(
             game_uuid,
             {
                 "board": game.board,
                 "status": game.status,
-                "current_turn": game.current_turn,
+                "current_turn": current_turn_player.nick_name,
                 "winner": game.winner_nick_name,
                 "moves_count": game.moves_count,
             },

@@ -27,7 +27,7 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
 
     async def get(self, db: AsyncSession, id: Any):
         query = select(self.model).filter(self.model.id == id)
-        return self._first(db.scalars(query))
+        return await self._first(db.scalars(query))
 
     async def _first(self, scalars) -> Union[ModelType, None]:
         results = await scalars

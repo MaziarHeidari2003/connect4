@@ -44,8 +44,7 @@ class PendingGameResponse(BaseModel):
     uuid: _uuid.UUID
     status: GameStatus
     created: datetime
-    player_1_nick: str | None = None
-    player_2_nick: str | None = None
+    creator_nick_name: str | None = None
     board: list
 
     class Config:
