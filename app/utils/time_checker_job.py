@@ -56,11 +56,11 @@ def schedule_remover(game_uuid: uuid.UUID, move_num: int):
     )
 
 
-async def player_time_limit_check(
-    game_uuid: uuid.UUID, current_turn: int, move_num: int
-):
+async def player_time_limit_check(game_uuid: uuid.UUID, current_turn: int):
     async with async_session() as db:
         game = await crud.game.get_by_uuid(db=db, _uuid=game_uuid)
+        current_turn_player = await crud.player.get(db=db, id=game.current_turn)
+
         if game.current_turn == current_turn:
             game.status = schemas.GameStatus.FINISHED
             game.winner = (
@@ -72,8 +72,8 @@ async def player_time_limit_check(
                 {
                     "board": game.board,
                     "status": game.status,
-                    "current_turn": game.current_turn,
-                    "winner": game.winner,
+                    "current_turn": current_turn_player.nick_name,
+                    "winner": game.winner_nick_name,
                     "moves_count": game.moves_count,
                 },
             )

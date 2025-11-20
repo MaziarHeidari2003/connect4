@@ -271,12 +271,12 @@ async def make_move(
             print(f"{game.uuid} removed from the scheduler")
         except Exception as e:
             print(e)
-
-        await schedule_player_time(
-            current_turn=game.current_turn,
-            game_uuid=game.uuid,
-            move_num=game.moves_count + 1,
-        )
+        if game.status != schemas.GameStatus.FINISHED:
+            await schedule_player_time(
+                current_turn=game.current_turn,
+                game_uuid=game.uuid,
+                move_num=game.moves_count + 1,
+            )
 
         return True
 
