@@ -94,13 +94,14 @@ async def join_game(
     game.current_turn = game.player_1
     game.status = schemas.GameStatus.IN_PROGRESS.value
     game = await crud.game.update(db=db, db_obj=game)
+    current_turn_player = await crud.player.get(db=db, id=game.current_turn)
 
     await connection_manager.broadcast_update(
         game_uuid,
         {
             "board": game.board,
             "status": game.status,
-            "current_turn": game.current_turn,
+            "current_turn": current_turn_player.nick_name,
             "winner": game.winner,
             "moves_count": game.moves_count,
         },
@@ -368,6 +369,7 @@ async def websocket_endpoint(websocket: WebSocket, game_uuid: str):
             await websocket.receive_text()
     except WebSocketDisconnect:
         await connection_manager.disconnect_player(game_uuid, websocket)
+        print(f"Disconnecting one of the legs of the socket from {game_uuid}")
 
 
 @router.get("/current_player_active_game")
