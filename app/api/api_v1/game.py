@@ -164,6 +164,7 @@ async def make_move(
                     "status": game.status,
                     "winner": game.winner_nick_name,
                     "moves_count": game.moves_count,
+                    "end_reason": "making move out of turn",
                 },
             )
             raise HTTPException(
@@ -190,6 +191,7 @@ async def make_move(
                     "status": game.status,
                     "winner": game.winner_nick_name,
                     "moves_count": game.moves_count,
+                    "end_reason": "choosing the out-of-index column",
                 },
             )
             raise HTTPException(
@@ -218,6 +220,7 @@ async def make_move(
                     "status": game.status,
                     "winner": game.winner_nick_name,
                     "moves_count": game.moves_count,
+                    "end_reason": "choosing full column",
                 },
             )
             raise HTTPException(
@@ -256,6 +259,11 @@ async def make_move(
                 "winner": game.winner_nick_name,
                 "moves_count": game.moves_count,
                 "last_move": chosen_column,
+                "end_reason": (
+                    f"{game.winner_nick_name} won the game!"
+                    if game.winner is not None
+                    else None
+                ),
             },
         )
 
