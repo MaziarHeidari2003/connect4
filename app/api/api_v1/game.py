@@ -386,3 +386,54 @@ async def get_current_player_game_uuid(
     )
 
     return active_game_uuid
+
+
+@router.patch("/leave-game")
+async def leave_game(
+    game_uuid: str = Query(...),
+    current_player: models.Player = Depends(deps.get_current_user),
+    db: AsyncSession = Depends(deps.get_db_async),
+):
+    if (
+        isinstance(game_uuid, str)
+        and game_uuid.startswith('"')
+        and game_uuid.endswith('"')
+    ):
+        game_uuid = game_uuid.strip('"')
+
+    game = await crud.game.get_by_uuid(db=db, _uuid=game_uuid)
+    if not game:
+        raise HTTPException(status_code=404, detail="Game not found")
+
+    if game.status == schemas.GameStatus.FINISHED:
+        return {"detail": "Game already finished"}
+
+    if current_player.id == game.player_1:
+        winner_id = game.player_2
+        winner_nick = game.player_2_nick_name
+    else:
+        winner_id = game.player_1
+        winner_nick = game.player_1_nick_name
+
+    game.winner = winner_id
+    game.winner_nick_name = winner_nick
+    game.status = schemas.GameStatus.FINISHED
+
+    game = await crud.game.update(db=db, db_obj=game)
+
+    try:
+        schedule_remover(game_uuid=game.uuid, move_num=game.moves_count + 1)
+    except Exception:
+        pass
+
+    await connection_manager.broadcast_update(
+        game_uuid,
+        {
+            "board": game.board,
+            "status": game.status,
+            "winner": winner_nick,
+            "moves_count": game.moves_count,
+        },
+    )
+
+    return {"detail": "Game ended because a player left"}
