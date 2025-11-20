@@ -30,8 +30,8 @@ class GameResponse(BaseModel):
     uuid: _uuid.UUID
     status: GameStatus
     created: datetime
-    player_1_nick: str | None = None
-    player_2_nick: str | None = None
+    player_1_nick_name: str | None = None
+    player_2_nick_name: str | None = None
     creator_nick_name: str | None = None
     board: list
     current_turn_nick: str | None = None
