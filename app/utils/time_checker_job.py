@@ -67,6 +67,11 @@ async def player_time_limit_check(game_uuid: uuid.UUID, current_turn: int):
                 if current_turn == game.player_2
                 else game.player_2_nick_name
             )
+            loser_nick_name = (
+                game.player_1_nick_name
+                if current_turn == game.player_1
+                else game.player_2_nick_name
+            )
             game.winner_nick_name = winner_nick_name
             game.status = schemas.GameStatus.FINISHED
             game.winner = (
@@ -82,6 +87,7 @@ async def player_time_limit_check(game_uuid: uuid.UUID, current_turn: int):
                     "current_turn_id": current_turn_player.id,
                     "winner": game.winner_nick_name,
                     "moves_count": game.moves_count,
+                    "end_reason": f"{loser_nick_name} delayed too much and lost",
                 },
             )
             print(
