@@ -108,7 +108,7 @@ async def join_game(
         },
     )
 
-    return True
+    return game
 
 
 @router.patch("/make-move")
