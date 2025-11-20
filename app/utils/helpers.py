@@ -1,6 +1,6 @@
 def winner_move(column_count: int, row_count: int, player_move: int, board: list):
     # vertically
-    for c in range(column_count):
+    for c in range(column_count + 1):
         for r in range(row_count - 1):
             if (
                 board[c][r] == player_move
