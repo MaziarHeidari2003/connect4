@@ -396,6 +396,7 @@ async def leave_game(
     db: AsyncSession = Depends(deps.get_db_async),
 ):
     # I had to make this endpoint authless! so that in the front code I could use sendBeacon, because I was't using cookies and I am not a front developer!
+    
     game = await crud.game.get_by_uuid(db=db, _uuid=game_uuid)
     if not game:
         raise HTTPException(status_code=404, detail="Game not found")
