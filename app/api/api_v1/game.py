@@ -258,6 +258,7 @@ async def make_move(
                 "current_turn_id": current_turn_player.id,
                 "winner": game.winner_nick_name,
                 "moves_count": game.moves_count,
+                "last_move": chosen_column,
             },
         )
 
