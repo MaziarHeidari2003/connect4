@@ -388,7 +388,7 @@ async def get_current_player_game_uuid(
     return active_game_uuid
 
 
-@router.patch("/leave-game")
+@router.post("/leave-game")
 async def leave_game(
     game_uuid: str = Query(...),
     current_player: models.Player = Depends(deps.get_current_user),
