@@ -107,9 +107,6 @@ async def join_game(
             "moves_count": game.moves_count,
         },
     )
-    await schedule_player_time(
-        game_uuid=game.uuid, current_turn=game.current_turn, move_num=1
-    )
 
     return True
 
@@ -272,8 +269,9 @@ async def make_move(
         await crud.player_move_log.create(db=db, obj_in=player_move_log)
 
         try:
-            schedule_remover(game_uuid=game.uuid, move_num=game.moves_count)
-            print(f"{game.uuid} removed from the scheduler")
+            if game.moves_count != 1:
+                schedule_remover(game_uuid=game.uuid, move_num=game.moves_count)
+                print(f"{game.uuid} removed from the scheduler")
         except Exception as e:
             print(e)
         if game.status != schemas.GameStatus.FINISHED:
