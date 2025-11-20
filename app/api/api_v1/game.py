@@ -167,6 +167,14 @@ async def make_move(
                     "end_reason": "making move out of turn",
                 },
             )
+
+            try:
+                if game.moves_count != 1:
+                    schedule_remover(game_uuid=game.uuid, move_num=game.moves_count)
+                    print(f"{game.uuid} removed from the scheduler")
+            except Exception as e:
+                print(e)
+
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="It was't your turn. You lost the game honey.",
@@ -194,6 +202,14 @@ async def make_move(
                     "end_reason": "choosing the out-of-index column",
                 },
             )
+
+            try:
+                if game.moves_count != 1:
+                    schedule_remover(game_uuid=game.uuid, move_num=game.moves_count)
+                    print(f"{game.uuid} removed from the scheduler")
+            except Exception as e:
+                print(e)
+
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="Chosen column index is not valid. You lost the game honey",
@@ -223,6 +239,14 @@ async def make_move(
                     "end_reason": "choosing full column",
                 },
             )
+
+            try:
+                if game.moves_count != 1:
+                    schedule_remover(game_uuid=game.uuid, move_num=game.moves_count)
+                    print(f"{game.uuid} removed from the scheduler")
+            except Exception as e:
+                print(e)
+
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="This column is full, You lost the game honey,",
