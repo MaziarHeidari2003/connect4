@@ -62,6 +62,12 @@ async def player_time_limit_check(game_uuid: uuid.UUID, current_turn: int):
         current_turn_player = await crud.player.get(db=db, id=game.current_turn)
 
         if game.current_turn == current_turn:
+            winner_nick_name = (
+                game.player_1_nick_name
+                if current_turn == game.player_2
+                else game.player_2_nick_name
+            )
+            game.winner_nick_name = winner_nick_name
             game.status = schemas.GameStatus.FINISHED
             game.winner = (
                 game.player_1 if current_turn == game.player_2 else game.player_2
@@ -77,7 +83,9 @@ async def player_time_limit_check(game_uuid: uuid.UUID, current_turn: int):
                     "moves_count": game.moves_count,
                 },
             )
-            print("Broadcast to all connected sockets done")
+            print(
+                f"Time is up for {current_turn_player.nick_name} and the winner is {winner_nick_name}"
+            )
 
 
 async def schedule_player_time(game_uuid: uuid.UUID, current_turn: int, move_num: int):
