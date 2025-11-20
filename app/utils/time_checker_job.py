@@ -79,6 +79,7 @@ async def player_time_limit_check(game_uuid: uuid.UUID, current_turn: int):
                     "board": game.board,
                     "status": game.status,
                     "current_turn": current_turn_player.nick_name,
+                    "current_turn_id": current_turn_player.id,
                     "winner": game.winner_nick_name,
                     "moves_count": game.moves_count,
                 },

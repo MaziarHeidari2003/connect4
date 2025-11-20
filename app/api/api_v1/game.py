@@ -102,6 +102,7 @@ async def join_game(
             "board": game.board,
             "status": game.status,
             "current_turn": current_turn_player.nick_name,
+            "current_turn_id": current_turn_player.id,
             "winner": game.winner,
             "moves_count": game.moves_count,
         },
@@ -254,6 +255,7 @@ async def make_move(
                 "board": game.board,
                 "status": game.status,
                 "current_turn": current_turn_player.nick_name,
+                "current_turn_id": current_turn_player.id,
                 "winner": game.winner_nick_name,
                 "moves_count": game.moves_count,
             },
@@ -396,7 +398,7 @@ async def leave_game(
     db: AsyncSession = Depends(deps.get_db_async),
 ):
     # I had to make this endpoint authless! so that in the front code I could use sendBeacon, because I was't using cookies and I am not a front developer!
-    
+
     game = await crud.game.get_by_uuid(db=db, _uuid=game_uuid)
     if not game:
         raise HTTPException(status_code=404, detail="Game not found")
@@ -416,7 +418,7 @@ async def leave_game(
     game.status = schemas.GameStatus.FINISHED
 
     game = await crud.game.update(db=db, db_obj=game)
-    current_player_turn = await crud.player.get(db=db, id=game.current_turn)
+    current_turn_player = await crud.player.get(db=db, id=game.current_turn)
     try:
         schedule_remover(game_uuid=game.uuid, move_num=game.moves_count + 1)
     except Exception:
@@ -429,7 +431,8 @@ async def leave_game(
             "status": game.status,
             "winner": winner_nick,
             "moves_count": game.moves_count,
-            "current_turn": current_player_turn.nick_name,
+            "current_turn": current_turn_player.nick_name,
+            "current_turn_id": current_turn_player.id,
         },
     )
 
