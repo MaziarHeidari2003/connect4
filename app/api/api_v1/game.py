@@ -158,8 +158,8 @@ async def make_move(
             await crud.game.update(db=db, db_obj=game)
 
             try:
-                if game.moves_count != 1:
-                    schedule_remover(game_uuid=game.uuid, move_num=game.moves_count)
+                if game.moves_count > 2:
+                    schedule_remover(game_uuid=game.uuid, move_num=game.moves_count + 1)
                     print(f"{game.uuid} removed from the scheduler")
             except Exception as e:
                 print(e)
@@ -193,8 +193,8 @@ async def make_move(
             await crud.game.update(db=db, db_obj=game)
 
             try:
-                if game.moves_count != 1:
-                    schedule_remover(game_uuid=game.uuid, move_num=game.moves_count)
+                if game.moves_count > 2:
+                    schedule_remover(game_uuid=game.uuid, move_num=game.moves_count + 1)
                     print(f"{game.uuid} removed from the scheduler")
             except Exception as e:
                 print(e)
@@ -230,8 +230,8 @@ async def make_move(
             await crud.game.update(db=db, db_obj=game)
 
             try:
-                if game.moves_count != 1:
-                    schedule_remover(game_uuid=game.uuid, move_num=game.moves_count)
+                if game.moves_count > 2:
+                    schedule_remover(game_uuid=game.uuid, move_num=game.moves_count + 1)
                     print(f"{game.uuid} removed from the scheduler")
             except Exception as e:
                 print(e)
@@ -248,8 +248,8 @@ async def make_move(
             )
 
             try:
-                if game.moves_count != 1:
-                    schedule_remover(game_uuid=game.uuid, move_num=game.moves_count)
+                if game.moves_count > 2:
+                    schedule_remover(game_uuid=game.uuid, move_num=game.moves_count + 1)
                     print(f"{game.uuid} removed from the scheduler")
             except Exception as e:
                 print(e)
@@ -308,13 +308,13 @@ async def make_move(
         await crud.player_move_log.create(db=db, obj_in=player_move_log)
 
         try:
-            if game.moves_count != 1:
-                schedule_remover(game_uuid=game.uuid, move_num=game.moves_count)
+            if game.moves_count > 2:
+                schedule_remover(game_uuid=game.uuid, move_num=game.moves_count + 1)
                 print(f"{game.uuid} removed from the scheduler")
         except Exception as e:
             print(e)
         if (
-            game.status != schemas.GameStatus.FINISHED and game.moves_count > 2
+            game.status != schemas.GameStatus.FINISHED and game.moves_count > 1
         ):  # This is for the time human is playing with a bot and human starts the game but game is gonna start for the bot in 20 sec. So if the scheduler works here the human would win the game cause of the delay in bots move
             await schedule_player_time(
                 current_turn=game.current_turn,
