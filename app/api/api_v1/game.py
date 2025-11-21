@@ -160,7 +160,9 @@ async def make_move(
             try:
                 if game.moves_count > 2:
                     schedule_remover(game_uuid=game.uuid, move_num=game.moves_count + 1)
-                    print(f"{game.uuid} removed from the scheduler")
+                    print(
+                        f"{game.moves_count + 1}_{game.uuid} removed from the scheduler"
+                    )
             except Exception as e:
                 print(e)
 
@@ -195,7 +197,9 @@ async def make_move(
             try:
                 if game.moves_count > 2:
                     schedule_remover(game_uuid=game.uuid, move_num=game.moves_count + 1)
-                    print(f"{game.uuid} removed from the scheduler")
+                    print(
+                        f"{game.moves_count + 1}_{game.uuid} removed from the scheduler"
+                    )
             except Exception as e:
                 print(e)
 
@@ -232,7 +236,9 @@ async def make_move(
             try:
                 if game.moves_count > 2:
                     schedule_remover(game_uuid=game.uuid, move_num=game.moves_count + 1)
-                    print(f"{game.uuid} removed from the scheduler")
+                    print(
+                        f"{game.moves_count + 1}_{game.uuid} removed from the scheduler"
+                    )
             except Exception as e:
                 print(e)
 
@@ -250,7 +256,9 @@ async def make_move(
             try:
                 if game.moves_count > 2:
                     schedule_remover(game_uuid=game.uuid, move_num=game.moves_count + 1)
-                    print(f"{game.uuid} removed from the scheduler")
+                    print(
+                        f"{game.moves_count + 1}_{game.uuid} removed from the scheduler"
+                    )
             except Exception as e:
                 print(e)
 
@@ -312,7 +320,7 @@ async def make_move(
                 schedule_remover(
                     game_uuid=game.uuid, move_num=game.moves_count
                 )  # This is tricky! In here You should remove the move-scheduler which has just happened
-                print(f"{game.uuid} removed from the scheduler")
+                print(f"{game.moves_count + 1}_{game.uuid} removed from the scheduler")
         except Exception as e:
             print(e)
         if (
