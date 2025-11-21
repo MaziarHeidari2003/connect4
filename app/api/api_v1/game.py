@@ -373,17 +373,15 @@ async def review_finished_game_steps(
         game_uuid = game_uuid.strip('"')
 
     game = await crud.game.get_by_uuid(db=db, _uuid=game_uuid)
+
     if not game:
         raise HTTPException(status_code=404, detail="Game not found")
-    print(game_step)
+
     if not game_step:
         game_step = game.moves_count
-    print(game.moves_count)
     specific_game_step = await crud.player_move_log.get_by_game_id_step(
         db=db, game_id=game.id, step=game_step
     )
-    print(specific_game_step)
-    print(game_step)
     if not specific_game_step:
         raise HTTPException(status_code=404, detail="No move log found for this step")
 

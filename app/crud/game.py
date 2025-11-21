@@ -54,7 +54,7 @@ class CRUDGame(CRUDBase[Game, GameCreateSchema, GameUpdateSchema]):
             )
             .join(models.Player, self.model.created_by == models.Player.id)
             .where(self.model.status == game_status)
-            .order_by(self.model.created)
+            .order_by(self.model.created.desc())
         )
         if game_status != schemas.GameStatus.PENDING:
             query = query
