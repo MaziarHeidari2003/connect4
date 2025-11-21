@@ -32,11 +32,11 @@ scheduler_app = SchedulerApp()
 
 
 async def time_limit_checker(game_uuid: uuid.UUID):
-    print(f"Background task for game {game_uuid} started")
+    print(f"Background task for game {game_uuid} started to get terminated")
     async with async_session() as db:
         game = await crud.game.get_by_uuid(db=db, _uuid=game_uuid)
         if game.status == schemas.GameStatus.PENDING:
-            game.status = schemas.GameStatus.FINISHED
+            game.status = schemas.GameStatus.TERMINATED
         await crud.game.update(db=db, db_obj=game)
 
 

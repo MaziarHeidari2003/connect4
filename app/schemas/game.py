@@ -8,6 +8,9 @@ class GameStatus(str, enum.Enum):
     PENDING = "PENDING"
     IN_PROGRESS = "IN_PROGESS"
     FINISHED = "FINISHED"
+    TERMINATED = (
+        "TERMINATED"  # For the games who have been pending or in-progress for a  while
+    )
 
 
 class GameCreateSchema(BaseModel):
