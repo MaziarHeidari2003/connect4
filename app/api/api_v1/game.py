@@ -157,6 +157,13 @@ async def make_move(
             game.status = schemas.GameStatus.FINISHED
             await crud.game.update(db=db, db_obj=game)
 
+            try:
+                if game.moves_count != 1:
+                    schedule_remover(game_uuid=game.uuid, move_num=game.moves_count)
+                    print(f"{game.uuid} removed from the scheduler")
+            except Exception as e:
+                print(e)
+
             await connection_manager.broadcast_update(
                 game_uuid,
                 {
@@ -167,13 +174,6 @@ async def make_move(
                     "end_reason": "making move out of turn",
                 },
             )
-
-            try:
-                if game.moves_count != 1:
-                    schedule_remover(game_uuid=game.uuid, move_num=game.moves_count)
-                    print(f"{game.uuid} removed from the scheduler")
-            except Exception as e:
-                print(e)
 
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
@@ -192,6 +192,13 @@ async def make_move(
             game.status = schemas.GameStatus.FINISHED
             await crud.game.update(db=db, db_obj=game)
 
+            try:
+                if game.moves_count != 1:
+                    schedule_remover(game_uuid=game.uuid, move_num=game.moves_count)
+                    print(f"{game.uuid} removed from the scheduler")
+            except Exception as e:
+                print(e)
+
             await connection_manager.broadcast_update(
                 game_uuid,
                 {
@@ -202,13 +209,6 @@ async def make_move(
                     "end_reason": "choosing the out-of-index column",
                 },
             )
-
-            try:
-                if game.moves_count != 1:
-                    schedule_remover(game_uuid=game.uuid, move_num=game.moves_count)
-                    print(f"{game.uuid} removed from the scheduler")
-            except Exception as e:
-                print(e)
 
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
@@ -228,6 +228,13 @@ async def make_move(
             )
             game.status = schemas.GameStatus.FINISHED
             await crud.game.update(db=db, db_obj=game)
+
+            try:
+                if game.moves_count != 1:
+                    schedule_remover(game_uuid=game.uuid, move_num=game.moves_count)
+                    print(f"{game.uuid} removed from the scheduler")
+            except Exception as e:
+                print(e)
 
             await connection_manager.broadcast_update(
                 game_uuid,
@@ -434,7 +441,11 @@ async def leave_game(
     if not game:
         raise HTTPException(status_code=404, detail="Game not found")
 
-    if game.status in (schemas.GameStatus.FINISHED, schemas.GameStatus.PENDING, schemas.GameStatus.TERMINATED):
+    if game.status in (
+        schemas.GameStatus.FINISHED,
+        schemas.GameStatus.PENDING,
+        schemas.GameStatus.TERMINATED,
+    ):
         return {"detail": "Game already finished"}
 
     if player_id == game.player_1:
