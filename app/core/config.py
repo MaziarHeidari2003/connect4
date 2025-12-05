@@ -32,7 +32,7 @@ class Settings(BaseSettings):
     DEBUG: bool = False
 
     SECRET_KEY: str
-    ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24 * 1 * 7  # 7 days
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24 * 1 * 30  # 7 days
 
     POSTGRESQL_ASYNC_DB_POOL_SIZE: int = 40
     POSTGRESQL_DB_POOL_SIZE: int = 20
