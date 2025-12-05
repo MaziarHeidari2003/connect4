@@ -46,6 +46,7 @@ class GameResponse(BaseModel):
     board: list
     current_turn_nick: str | None = None
     winner: str | None = None
+    game_sides_type: GameSidesType
 
     class Config:
         from_attributes = True
