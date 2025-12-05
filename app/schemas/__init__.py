@@ -11,6 +11,7 @@ from .game import (
     GameUpdateSchema,
     GameStatus,
     GameResponse,
+    GameSidesType,
 )
 
 from .player_move_log import (

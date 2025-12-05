@@ -29,6 +29,7 @@ router = APIRouter()
 async def create_game(
     current_player: models.Player = Depends(deps.get_current_user),
     db: AsyncSession = Depends(deps.get_db_async),
+    bot_or_human: None | schemas.GameSidesType = schemas.GameSidesType.TwoSideHuman,
 ) -> uuid.UUID:
     game_create_data = schemas.GameCreateSchema(
         board=[
@@ -44,6 +45,7 @@ async def create_game(
         created_by=current_player.id,
         status=schemas.GameStatus.PENDING.value,
         moves_count=0,
+        game_sides_type=bot_or_human,
     )
 
     game = await crud.game.create(db=db, obj_in=game_create_data)

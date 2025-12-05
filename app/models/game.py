@@ -30,3 +30,4 @@ class Game(Base):
     winner: Mapped[int] = mapped_column(
         ForeignKey(Player.id, ondelete="SET NULL"), index=True, nullable=True
     )
+    game_sides_type: Mapped[str] = mapped_column(String, nullable=True)

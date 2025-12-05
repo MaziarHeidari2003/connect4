@@ -13,12 +13,19 @@ class GameStatus(str, enum.Enum):
     )
 
 
+class GameSidesType(str, enum.Enum):
+    OneSideBot = "OneSideBot"
+    TwoSideBot = "TwoSideBot"
+    TwoSideHuman = "TwoSideHuman"
+
+
 class GameCreateSchema(BaseModel):
     uuid: _uuid.UUID | None = None
     board: list
     status: GameStatus | None = None
     created_by: int | None = None
     moves_count: int
+    game_sides_type: GameSidesType
 
 
 class GameUpdateSchema(BaseModel):

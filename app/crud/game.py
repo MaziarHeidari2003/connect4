@@ -50,6 +50,7 @@ class CRUDGame(CRUDBase[Game, GameCreateSchema, GameUpdateSchema]):
                 self.model.created_by,
                 self.model.player_1_nick_name,
                 self.model.player_2_nick_name,
+                self.model.game_sides_type,
                 models.Player.nick_name.label("creator_nick_name"),
             )
             .join(models.Player, self.model.created_by == models.Player.id)
