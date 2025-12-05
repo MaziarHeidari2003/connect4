@@ -21,6 +21,7 @@ class CRUDGame(CRUDBase[Game, GameCreateSchema, GameUpdateSchema]):
                 self.model.created,
                 self.model.board,
                 self.model.uuid,
+                self.model.game_sides_type,
                 p1.nick_name.label("player_1_nick"),
                 p2.nick_name.label("player_2_nick"),
                 turn.nick_name.label("current_turn_nick"),
