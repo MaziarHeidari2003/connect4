@@ -11,7 +11,7 @@ class Settings(BaseSettings):
     TIME_LIMIT_TO_MAKE_MOVE: int
     TZ: str = "Asia/Tehran"
     CORS_ALLOWED_ORIGINS: List[str]
-    CRUD_CACHE_REDIS_EXPIRATION_TIME: int = 60 * 20  # 20 min
+    CRUD_CACHE_REDIS_EXPIRATION_TIME: int = 5  # 20 min
     CRUD_CACHE_BASE_NAMESPACE: str = "connect4_crud:"
     USE_APSCHEDULER: bool = True
     POSTGRES_SERVER: str
