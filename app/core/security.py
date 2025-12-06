@@ -7,8 +7,8 @@ from app.core.config import settings
 ALGORITHM = "HS256"
 
 
-def generate_access_token(user_data: Dict, expire_days: int = 5):
-    expire_time = (datetime.now() + timedelta(seconds=expire_days)).timestamp()
+def generate_access_token(user_data: Dict, expire_days: int = 14):
+    expire_time = (datetime.now() + timedelta(days=expire_days)).timestamp()
     access_token_payload = {
         "user_id": user_data["id"],
         "mobile": user_data["email"],

@@ -34,7 +34,7 @@ class Settings(BaseSettings):
     SECRET_KEY: str
     ACCESS_TOKEN_EXPIRE_MINUTES: int = (
         60 * 24 * 1 * 30
-    )  # I have trouble handling the token life time in the frontend so lets make it 30
+    )  # I have trouble handling the token life time in the frontend so lets make it 30, I just realized I am not using this env! Well this is a #TODO
 
     POSTGRESQL_ASYNC_DB_POOL_SIZE: int = 40
     POSTGRESQL_DB_POOL_SIZE: int = 20
