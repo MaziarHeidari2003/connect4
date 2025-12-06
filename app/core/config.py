@@ -11,7 +11,7 @@ class Settings(BaseSettings):
     TIME_LIMIT_TO_MAKE_MOVE: int
     TZ: str = "Asia/Tehran"
     CORS_ALLOWED_ORIGINS: List[str]
-    CRUD_CACHE_REDIS_EXPIRATION_TIME: int = 5  # 20 min
+    CRUD_CACHE_REDIS_EXPIRATION_TIME: int = 60 * 20  # 20 min
     CRUD_CACHE_BASE_NAMESPACE: str = "connect4_crud:"
     USE_APSCHEDULER: bool = True
     POSTGRES_SERVER: str
@@ -32,7 +32,9 @@ class Settings(BaseSettings):
     DEBUG: bool = False
 
     SECRET_KEY: str
-    ACCESS_TOKEN_EXPIRE_MINUTES: int = 5  # I have trouble handling the token life time in the frontend so lets make it 30
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = (
+        60 * 24 * 1 * 30
+    )  # I have trouble handling the token life time in the frontend so lets make it 30
 
     POSTGRESQL_ASYNC_DB_POOL_SIZE: int = 40
     POSTGRESQL_DB_POOL_SIZE: int = 20
