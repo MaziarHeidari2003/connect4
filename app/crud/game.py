@@ -79,7 +79,7 @@ class CRUDGame(CRUDBase[Game, GameCreateSchema, GameUpdateSchema]):
         )
         return await self._first(db.scalars(query))
 
-    async def get_active_game_for_player(db: AsyncSession, player_id: int):
+    async def get_active_game_for_player(self, db: AsyncSession, player_id: int):
         stmt = (
             select(models.Game)
             .where(
