@@ -79,5 +79,27 @@ class CRUDGame(CRUDBase[Game, GameCreateSchema, GameUpdateSchema]):
         )
         return await self._first(db.scalars(query))
 
+    async def get_active_game_for_player(db: AsyncSession, player_id: int):
+        stmt = (
+            select(models.Game)
+            .where(
+                (
+                    models.Game.status.in_(
+                        [
+                            schemas.GameStatus.IN_PROGRESS.value,
+                        ]
+                    )
+                )
+                & (
+                    (models.Game.player_1 == player_id)
+                    | (models.Game.player_2 == player_id)
+                    | (models.Game.created_by == player_id)
+                )
+            )
+            .limit(1)
+        )
+        result = await db.execute(stmt)
+        return result.scalar_one_or_none()
+
 
 game = CRUDGame(Game)

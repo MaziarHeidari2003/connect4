@@ -1,3 +1,7 @@
+from sqlalchemy.ext.asyncio import AsyncSession
+from app import schemas, crud
+
+
 def winner_move(column_count: int, row_count: int, player_move: int, board: list):
     # vertically
     for c in range(column_count + 1):
@@ -43,3 +47,12 @@ def winner_move(column_count: int, row_count: int, player_move: int, board: list
                 return True
 
     return False
+
+
+async def terminate_active_game_if_exists(db: AsyncSession, player_id: int):
+    active_game = await crud.game.get_active_game_for_player(db, player_id)
+    if active_game:
+        active_game.status = schemas.GameStatus.TERMINATED.value
+        await crud.game.update(db=db, db_obj=active_game)
+        return active_game
+    return None

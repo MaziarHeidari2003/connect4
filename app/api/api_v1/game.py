@@ -11,7 +11,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.api import deps
 from app import schemas, models, crud
 import uuid, random
-from app.utils.helpers import winner_move
+from app.utils.helpers import winner_move, terminate_active_game_if_exists
 from sqlalchemy.orm.attributes import flag_modified
 from app.utils.time_checker_job import (
     schedule_checker,
@@ -31,6 +31,11 @@ async def create_game(
     db: AsyncSession = Depends(deps.get_db_async),
     bot_or_human: None | schemas.GameSidesType = schemas.GameSidesType.TwoSideHuman,
 ) -> uuid.UUID:
+    try:
+        await terminate_active_game_if_exists(db, current_player.id)
+    except Exception as e:
+        print(e)
+
     game_create_data = schemas.GameCreateSchema(
         board=[
             [0, 0, 0, 0, 0, 0],
@@ -62,6 +67,12 @@ async def join_game(
     current_player: models.Player = Depends(deps.get_current_user),
     db: AsyncSession = Depends(deps.get_db_async),
 ):
+
+    try:
+        await terminate_active_game_if_exists(db, current_player.id)
+    except Exception as e:
+        print(e)
+
     if (
         isinstance(game_uuid, str)
         and game_uuid.startswith('"')
