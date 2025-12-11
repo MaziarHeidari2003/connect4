@@ -5,7 +5,7 @@ from app import schemas, crud
 def winner_move(column_count: int, row_count: int, player_move: int, board: list):
     # vertically
     for c in range(column_count + 1):
-        for r in range(row_count - 1):
+        for r in range(row_count - 2):
             if (
                 board[c][r] == player_move
                 and board[c][r + 1] == player_move
