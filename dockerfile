@@ -7,7 +7,9 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 ENV POETRY_VERSION=1.8.3
-RUN pip install --no-cache-dir "poetry==$POETRY_VERSION"
+
+RUN curl -sSL https://install.python-poetry.org | python3 - --version $POETRY_VERSION && \
+    ln -s /root/.local/bin/poetry /usr/local/bin/poetry
 
 RUN poetry config virtualenvs.create false
 
