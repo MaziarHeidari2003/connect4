@@ -79,3 +79,13 @@ python3 -m http.server 8080
 
 Make sure to fix the front code urls , I mean the front code is not clean at all! So check it and change everywhere the code is sending requests to the backend. 
 And add the localhost:8080 to the allowed origins
+
+
+## How to run bot vs bot game? 
+
+Open the the bot_vs_bot script, wherever you see #TODO that's the part you should change. You should change the players emails to your email and your opponent email. Right now the make_move method is just a random method which produces an int between 0 and 6 and puts in the col variable. 
+You should replace it with your own algorithm code. When you run the last block you should visit the web-page and login with one of the current players emails to be able to see the the game. Rember you have just 20 sec to do it! 
+
+## How to run human vs bot game?
+
+Just like running bot vs bot game but this time you just have to have one make_move method which blongs to the bot. When you run the last block of the script you should go visit the web-page and go the watch-your-code-game . Remeber to be logged in with the right email. You are the human-player you should't login with the bot-related-email
